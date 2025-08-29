@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Ella's Fun Game">
     <meta name="description" content="A fun game for Ella!">
-    <meta name="theme-color" content="#4b0082">
+    <meta name="theme-color" content="#1a1a2e">
     <title>Ella's Fun Game!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,8 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle, #222222, #1a1a1a);
-            color: #e0e0e0;
+            background: radial-gradient(circle, #2c2f45, #1a1a2e); /* Muted, clean gradient */
+            color: #e6e6fa; /* Light text color */
             margin: 0;
             padding: 0;
             display: flex;
@@ -40,13 +40,12 @@
         .page {
             position: absolute;
             width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            background: rgba(26, 26, 26, 0.8);
+            max-width: 500px; /* Reduced max-width for cleaner UI */
+            padding: 30px;
+            background: #2c2f45; /* Dark background for container */
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            border: 2px solid #00ffff; /* Changed from pink */
+            border: none; /* Removed neon border */
             transform: translateX(100vw);
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
@@ -61,41 +60,34 @@
 
         h1, h2 {
             font-family: 'Fredoka One', cursive;
-            color: #00ffff; /* Changed from pink */
-            animation: glow 1.5s infinite alternate;
+            color: #c4def6; /* Soft blue for titles */
+            text-shadow: none; /* Removed the glow/blur effect */
         }
-
-        /* Removed blur from h1 */
-
-        @keyframes glow {
-            from { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; } /* Changed from pink */
-            to { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; } /* Changed from pink */
-        }
-
+        
         p {
             font-size: 1.1em;
-            color: #e0e0e0;
+            color: #e6e6fa;
         }
 
         button {
-            background-color: #4b0082;
-            border: 2px solid #00ffff; /* Changed from pink */
-            border-radius: 20px;
-            padding: 12px 24px;
+            background: linear-gradient(135deg, #6a85b6, #bac8e0); /* Clean gradient on buttons */
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
             margin: 10px;
             font-size: 1.2em;
             cursor: pointer;
-            color: #00ffff; /* Changed from pink */
-            font-family: 'Fredoka One', cursive;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            color: #1a1a2e; /* Dark text on light buttons */
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: all 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
 
         button:hover {
-            background-color: #00ffff; /* Changed from pink */
-            color: #4b0082;
-            transform: scale(1.1) rotate(-3deg);
-            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.5); /* Changed from pink */
+            background: linear-gradient(135deg, #bac8e0, #6a85b6);
+            transform: scale(1.05); /* Gentle scale up */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         
         button:active {
@@ -105,12 +97,13 @@
         .option-btn {
             display: block;
             width: 80%;
-            margin: 10px auto;
+            max-width: 300px;
+            margin: 15px auto;
         }
         
         #score-display, #level-display {
             font-size: 1.4em;
-            color: #ff00ff; /* Changed to pink for score to stand out */
+            color: #e09f71; /* A warm orange for score to stand out */
             font-weight: 600;
         }
 
@@ -122,9 +115,10 @@
             position: absolute;
             width: 10px;
             height: 10px;
+            background-color: #e09f71; /* Orange */
             animation: confetti-fall 3s linear infinite;
         }
-        
+
         @keyframes confetti-fall {
             0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
@@ -151,9 +145,9 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 5px solid #00ffff; /* Changed from pink */
-            box-shadow: 0 0 10px #00ffff; /* Changed from pink */
-            animation: pulse 1s infinite alternate;
+            border: 5px solid #c4def6; /* Soft blue circle */
+            box-shadow: 0 0 10px #c4def6;
+            animation: none; /* Removed pulse animation */
         }
         
         #timer-progress {
@@ -163,12 +157,7 @@
             transform: translate(-50%, -50%);
             font-family: 'Fredoka One', cursive;
             font-size: 2em;
-            color: #ff00ff; /* Changed to pink */
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 5px #00ffff; } /* Changed from pink */
-            100% { box-shadow: 0 0 20px #00ffff; } /* Changed from pink */
+            color: #e09f71; /* Orange timer text */
         }
 
         .thinking-icon {
@@ -176,13 +165,13 @@
             height: 80px;
             margin: 20px auto;
             border-radius: 50%;
-            background-color: #ff00ff; /* Changed to pink */
+            background: linear-gradient(45deg, #6a85b6, #e09f71); /* Gradient for the icon */
             animation: spin-pulse 2s infinite;
         }
 
         @keyframes spin-pulse {
             0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); background-color: #00ffff; } /* Changed to cyan */
+            50% { transform: rotate(180deg) scale(1.1); }
             100% { transform: rotate(360deg) scale(1); }
         }
 
@@ -194,6 +183,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -209,10 +199,10 @@
         }
 
         .modal-content {
-            background: #2c003e;
+            background: #2c2f45; /* Modal background matches main container */
             padding: 30px;
             border-radius: 20px;
-            border: 2px solid #00ffff; /* Changed from pink */
+            border: 2px solid #c4def6; /* Soft border */
             max-width: 80%;
             transform: scale(0.8);
             transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -222,8 +212,28 @@
             transform: scale(1);
         }
 
+        #modal-message {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5em;
+            color: #c4def6;
+        }
+        
+        #modal-sub-message {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         .modal-buttons button {
-            margin: 10px;
+            width: auto;
+            min-width: 150px;
+            margin: 5px;
         }
     </style>
 </head>
@@ -276,6 +286,7 @@
     <div id="custom-modal" class="modal">
         <div class="modal-content">
             <p id="modal-message"></p>
+            <p id="modal-sub-message"></p>
             <div id="modal-buttons" class="modal-buttons"></div>
         </div>
     </div>
@@ -286,6 +297,7 @@
         const confettiContainer = document.getElementById('confetti-container');
         const customModal = document.getElementById('custom-modal');
         const modalMessage = document.getElementById('modal-message');
+        const modalSubMessage = document.getElementById('modal-sub-message');
         const modalButtons = document.getElementById('modal-buttons');
 
         let guessingLevel = 1;
@@ -404,8 +416,9 @@
         }
 
         // Custom Modal Functions
-        function showModal(message, buttons) {
+        function showModal(message, subMessage = '', buttons) {
             modalMessage.innerText = message;
+            modalSubMessage.innerText = subMessage;
             modalButtons.innerHTML = '';
             buttons.forEach(btnInfo => {
                 const btn = document.createElement('button');
@@ -438,7 +451,7 @@
             document.getElementById('next-guessing-btn').classList.add('hidden');
             const levelQuestions = guessingQuestions.filter(q => q.level === guessingLevel);
             if (levelQuestions.length === 0) {
-                showModal('🎉 You completed all levels!', [{text: 'OK', callback: () => changePage('main-menu')}]);
+                showModal('🎉 You completed all levels!', '', [{text: 'OK', callback: () => changePage('main-menu')}]);
                 return;
             }
             const q = levelQuestions[Math.floor(Math.random() * levelQuestions.length)];
@@ -464,10 +477,10 @@
                 }
                 updateGuessingInfo();
                 showConfetti();
-                showModal('Yay Ella! Correct!', [{text: 'Awesome!', callback: nextGuessingQuestion}]);
+                showModal('Yay Ella! Correct!', '', [{text: 'Awesome!', callback: nextGuessingQuestion}]);
             } else {
                 playWrong();
-                showModal('Oops! Try again next time!', [{text: 'OK', callback: nextGuessingQuestion}]);
+                showModal('Oops! Try again next time!', '', [{text: 'OK', callback: nextGuessingQuestion}]);
             }
             document.getElementById('guessing-options').querySelectorAll('button').forEach(btn => btn.disabled = true);
         }
@@ -492,7 +505,7 @@
 
             const levelCategories = lyingCategories.filter(c => c.level === lyingLevel);
             if (levelCategories.length === 0) {
-                showModal('🎉 You completed all levels!', [{text: 'OK', callback: () => changePage('main-menu')}]);
+                showModal('🎉 You completed all levels!', '', [{text: 'OK', callback: () => changePage('main-menu')}]);
                 document.getElementById('lying-prompt').classList.add('hidden');
                 document.getElementById('lying-options').classList.add('hidden');
                 return;
@@ -522,7 +535,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     stopTicking();
-                    showModal("⏰ Time's up, Ella! Let's try again.", [{text: 'OK', callback: nextLyingRound}]);
+                    showModal("⏰ Time's up, Ella! Let's try again.", '', [{text: 'OK', callback: nextLyingRound}]);
                 }
             }, 1000);
         }
@@ -537,16 +550,16 @@
         function guessLie(choice) {
             document.getElementById('thinking-area').classList.add('hidden');
             const isLying = Math.random() < (0.3 + (lyingLevel * 0.1)) ? 'lying' : 'telling the truth';
-            const resultDiv = document.getElementById('guess-result');
-            resultDiv.innerHTML = `<p>I think you're... <strong>${isLying}</strong>!</p>`;
-
-            // New logic: Show the guess result first, then ask if it was right
-            setTimeout(() => {
-                showModal('Was I right? (Did I guess correctly?)', [
+            
+            // Show the AI's guess inside the modal
+            showModal(
+                `I think you're...<br><strong>${isLying}</strong>!`,
+                'Was I right? (Did I guess correctly?)',
+                [
                     { text: 'Yes!', callback: () => checkLyingAnswer(true) },
                     { text: 'No...', callback: () => checkLyingAnswer(false) }
-                ]);
-            }, 500);
+                ]
+            );
         }
         function checkLyingAnswer(wasCorrect) {
             if (wasCorrect) {
@@ -557,11 +570,10 @@
                 }
                 updateLyingInfo();
                 showConfetti();
-                showModal("Yay! I guessed right!", [{text: 'Cool!'}]);
+                showModal("Yay! I guessed right!", '', [{text: 'Cool!', callback: nextLyingRound}]);
             } else {
-                showModal("Oh no! I was wrong. Better luck next time for me!", [{text: 'OK'}]);
+                showModal("Oh no! I was wrong. Better luck next time for me!", '', [{text: 'OK', callback: nextLyingRound}]);
             }
-            document.getElementById('next-lying-btn').classList.remove('hidden');
         }
         
         // Confetti Animation
@@ -572,7 +584,7 @@
                 confetti.classList.add('confetti');
                 confetti.style.left = `${Math.random() * 100}%`;
                 confetti.style.animationDelay = `${Math.random() * 2}s`;
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 75%)`;
                 confettiContainer.appendChild(confetti);
             }
             setTimeout(() => { confettiContainer.innerHTML = ''; }, 3000);
