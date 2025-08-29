@@ -299,6 +299,29 @@
             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         }
 
+        function lighten(hex, amount = 0.2) {
+            let { r, g, b } = hexToRgb(hex);
+            r = Math.min(255, r + 255 * amount);
+            g = Math.min(255, g + 255 * amount);
+            b = Math.min(255, b + 255 * amount);
+            return rgbToHex(r, g, b);
+        }
+
+        function darken(hex, amount = 0.2) {
+            let { r, g, b } = hexToRgb(hex);
+            r = Math.max(0, r - 255 * amount);
+            g = Math.max(0, g - 255 * amount);
+            b = Math.max(0, b - 255 * amount);
+            return rgbToHex(r, g, b);
+        }
+
+        function createGradient(ctx, color, x1 = 0, y1 = 0, x2 = 0, y2 = 300) {
+            const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+            grad.addColorStop(0, lighten(color, 0.15));
+            grad.addColorStop(1, darken(color, 0.15));
+            return grad;
+        }
+
         function getRandomColor() {
             const colors = ['#ff6f61', '#ffd166', '#4db6ac', '#7b1fa2'];
             return colors[Math.floor(Math.random() * colors.length)];
@@ -306,18 +329,28 @@
 
         const gameDrawings = {
             'apple': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee'].slice(0, 3).fill(colors);
+                const numParts = 3;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'leaf', path: new Path2D(), color: defaultColors[1] || '#ddd' },
-                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#eee' }
+                    { name: 'body', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'leaf', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'stem', path: new Path2D(), color: defaultColors[2] }
                 ];
-                // Body
+                // Enhanced body with more organic shape
                 parts[0].path.moveTo(150, 45); parts[0].path.bezierCurveTo(225, 45, 270, 105, 270, 165); parts[0].path.bezierCurveTo(270, 225, 210, 270, 150, 270); parts[0].path.bezierCurveTo(90, 270, 30, 225, 30, 165); parts[0].path.bezierCurveTo(30, 105, 75, 45, 150, 45);
                 // Leaf
                 parts[1].path.moveTo(165, 45); parts[1].path.bezierCurveTo(180, 30, 210, 30, 225, 45); parts[1].path.bezierCurveTo(210, 60, 180, 60, 165, 45);
                 // Stem
                 parts[2].path.moveTo(143, 75); parts[2].path.bezierCurveTo(135, 45, 165, 45, 158, 75);
+                // Add highlight for enhancement
+                const highlight = new Path2D();
+                highlight.arc(90, 90, 30, 0, Math.PI * 2);
+                parts.push({ name: 'highlight', path: highlight, color: lighten(defaultColors[0], 0.3) });
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             },
             'triangle': (ctx, colors) => {
@@ -345,13 +378,15 @@
                 return [{ name: 'shape', path: path, color: defaultColor || '#ccc' }];
             },
             'house': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee', '#fff', '#aaa'].slice(0, 5).fill(colors);
+                const numParts = 6;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'roof', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'walls', path: new Path2D(), color: defaultColors[1] || '#ddd' },
-                    { name: 'door', path: new Path2D(), color: defaultColors[2] || '#eee' },
-                    { name: 'window1', path: new Path2D(), color: defaultColors[3] || '#fff' },
-                    { name: 'window2', path: new Path2D(), color: defaultColors[4] || '#aaa' },
+                    { name: 'roof', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'walls', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'door', path: new Path2D(), color: defaultColors[2] },
+                    { name: 'window1', path: new Path2D(), color: defaultColors[3] },
+                    { name: 'window2', path: new Path2D(), color: defaultColors[4] },
+                    { name: 'chimney', path: new Path2D(), color: defaultColors[5] }
                 ];
                 // Roof
                 parts[0].path.moveTo(150, 45); parts[0].path.lineTo(30, 135); parts[0].path.lineTo(270, 135); parts[0].path.closePath();
@@ -363,16 +398,25 @@
                 parts[3].path.rect(75, 165, 38, 38);
                 // Window 2
                 parts[4].path.rect(188, 165, 38, 38);
+                // Chimney enhancement
+                parts[5].path.rect(210, 75, 30, 60);
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             },
             'castle': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee', '#fff', '#aaa'].slice(0, 5).fill(colors);
+                const numParts = 6;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'mainWall', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'leftTower', path: new Path2D(), color: defaultColors[1] || '#ddd' },
-                    { name: 'rightTower', path: new Path2D(), color: defaultColors[2] || '#eee' },
-                    { name: 'flag', path: new Path2D(), color: defaultColors[3] || '#fff' },
-                    { name: 'door', path: new Path2D(), color: defaultColors[4] || '#aaa' },
+                    { name: 'mainWall', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'leftTower', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'rightTower', path: new Path2D(), color: defaultColors[2] },
+                    { name: 'flag', path: new Path2D(), color: defaultColors[3] },
+                    { name: 'door', path: new Path2D(), color: defaultColors[4] },
+                    { name: 'battlement', path: new Path2D(), color: defaultColors[5] }
                 ];
                 // Main Wall
                 parts[0].path.rect(60, 100, 180, 180);
@@ -384,16 +428,25 @@
                 parts[3].path.moveTo(250, 60); parts[3].path.lineTo(265, 45); parts[3].path.lineTo(280, 60); parts[3].path.lineTo(265, 75); parts[3].path.closePath();
                 // Door
                 parts[4].path.rect(130, 200, 40, 80);
+                // Battlement enhancement
+                parts[5].path.rect(60, 90, 180, 10); parts[5].path.rect(70, 80, 20, 10); parts[5].path.rect(110, 80, 20, 10); parts[5].path.rect(150, 80, 20, 10); parts[5].path.rect(190, 80, 20, 10); parts[5].path.rect(210, 80, 20, 10);
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             },
             'car': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee', '#fff', '#aaa'].slice(0, 5).fill(colors);
+                const numParts = 6;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'roof', path: new Path2D(), color: defaultColors[1] || '#ddd' },
-                    { name: 'frontWheel', path: new Path2D(), color: defaultColors[2] || '#eee' },
-                    { name: 'backWheel', path: new Path2D(), color: defaultColors[3] || '#fff' },
-                    { name: 'window', path: new Path2D(), color: defaultColors[4] || '#aaa' },
+                    { name: 'body', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'roof', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'frontWheel', path: new Path2D(), color: defaultColors[2] },
+                    { name: 'backWheel', path: new Path2D(), color: defaultColors[3] },
+                    { name: 'window', path: new Path2D(), color: defaultColors[4] },
+                    { name: 'headlight', path: new Path2D(), color: defaultColors[5] }
                 ];
                 // Body
                 parts[0].path.moveTo(30, 180); parts[0].path.lineTo(270, 180); parts[0].path.lineTo(270, 240); parts[0].path.lineTo(30, 240); parts[0].path.closePath();
@@ -404,42 +457,75 @@
                 parts[3].path.arc(210, 240, 30, 0, 2 * Math.PI);
                 // Window
                 parts[4].path.rect(90, 130, 100, 30);
+                // Headlight enhancement
+                parts[5].path.arc(255, 200, 15, 0, 2 * Math.PI);
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             },
             'tree': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd'].slice(0, 2).fill(colors);
+                const numParts = 3;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'trunk', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'leaves', path: new Path2D(), color: defaultColors[1] || '#ddd' }
+                    { name: 'trunk', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'leaves1', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'leaves2', path: new Path2D(), color: defaultColors[2] }
                 ];
                 // Trunk
                 parts[0].path.rect(125, 180, 50, 90);
-                // Leaves
+                // Leaves enhanced with layers
                 parts[1].path.arc(150, 150, 120, 0, 2 * Math.PI);
+                parts[2].path.arc(150, 120, 80, 0, 2 * Math.PI);
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             },
             'robot': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee'].slice(0, 3).fill(colors);
+                const numParts = 4;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'head', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'body', path: new Path2D(), color: defaultColors[1] || '#ddd' },
-                    { name: 'antenna', path: new Path2D(), color: defaultColors[2] || '#eee' }
+                    { name: 'head', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'body', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'antenna', path: new Path2D(), color: defaultColors[2] },
+                    { name: 'eyes', path: new Path2D(), color: defaultColors[3] }
                 ];
                 parts[0].path.rect(100, 50, 100, 70);
                 parts[1].path.rect(80, 120, 140, 120);
                 parts[2].path.moveTo(150, 50); parts[2].path.lineTo(150, 30); parts[2].path.arc(150, 30, 10, 0, 2 * Math.PI);
+                // Eyes enhancement
+                parts[3].path.arc(130, 80, 10, 0, 2 * Math.PI); parts[3].path.arc(170, 80, 10, 0, 2 * Math.PI);
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             },
             'flower': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee'].slice(0, 3).fill(colors);
+                const numParts = 4;
+                const defaultColors = Array.isArray(colors) ? colors : Array(numParts).fill(colors);
                 const parts = [
-                    { name: 'petals', path: new Path2D(), color: defaultColors[0] || '#ccc' },
-                    { name: 'center', path: new Path2D(), color: defaultColors[1] || '#ddd' },
-                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#eee' }
+                    { name: 'petals', path: new Path2D(), color: defaultColors[0] },
+                    { name: 'center', path: new Path2D(), color: defaultColors[1] },
+                    { name: 'stem', path: new Path2D(), color: defaultColors[2] },
+                    { name: 'leaf', path: new Path2D(), color: defaultColors[3] }
                 ];
                 parts[0].path.arc(150, 150, 120, 0, 2 * Math.PI);
                 parts[1].path.arc(150, 150, 50, 0, 2 * Math.PI);
                 parts[2].path.rect(140, 270, 20, 30);
+                // Leaf enhancement
+                parts[3].path.moveTo(140, 280); parts[3].path.bezierCurveTo(120, 260, 100, 280, 120, 300); parts[3].path.closePath();
+                if (typeof colors === 'string') {
+                    parts.forEach((part, i) => {
+                        part.color = i % 2 === 0 ? lighten(colors, 0.05 * i) : darken(colors, 0.05 * i);
+                    });
+                }
                 return parts;
             }
         };
@@ -515,8 +601,11 @@
                 const randomColor = (imageName === correctImageName) ? randomCorrectColor : getRandomColor();
                 const parts = gameDrawings[imageName](ctx, randomColor);
                 parts.forEach(part => {
-                    ctx.fillStyle = part.color;
+                    ctx.fillStyle = createGradient(ctx, part.color);
                     ctx.fill(part.path);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 2;
+                    ctx.stroke(part.path);
                 });
 
                 const label = document.createElement('span');
@@ -569,7 +658,7 @@
                 const ctx = coloringCanvas.getContext('2d');
                 ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
                 
-                const shades = ['#888888', '#999999', '#aaaaaa', '#bbbbbb', '#cccccc']; 
+                const shades = ['#888888', '#999999', '#aaaaaa', '#bbbbbb', '#cccccc', '#dddddd']; 
                 currentImageParts = gameDrawings[correct](ctx, shades);
                 
                 // Initial draw of the image with outlines
@@ -610,7 +699,22 @@
             const ctx = coloringCanvas.getContext('2d');
             ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
             currentImageParts.forEach(part => {
-                ctx.fillStyle = part.color;
+                let fillStyle;
+                if (part.targetColor) {
+                    if (part.progress >= 1) {
+                        fillStyle = createGradient(ctx, part.targetColor);
+                    } else {
+                        const grad = ctx.createLinearGradient(0, 0, 0, coloringCanvas.height);
+                        grad.addColorStop(0, part.targetColor);
+                        grad.addColorStop(part.progress, part.targetColor);
+                        grad.addColorStop(part.progress, part.initialColor);
+                        grad.addColorStop(1, part.initialColor);
+                        fillStyle = grad;
+                    }
+                } else {
+                    fillStyle = createGradient(ctx, part.color);
+                }
+                ctx.fillStyle = fillStyle;
                 ctx.fill(part.path);
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 2;
@@ -619,30 +723,26 @@
         }
 
         function animateColorFill(ctx, part, targetColor) {
-            const startColorRgb = hexToRgb(part.color);
-            const targetColorRgb = hexToRgb(targetColor);
-            const duration = 500;
+            const duration = 1000; // Slower for flowing effect
             const startTime = performance.now();
-            let isAnimating = true;
+            part.initialColor = part.color;
+            part.targetColor = targetColor;
+            part.progress = 0;
 
             const animate = (currentTime) => {
-                if (!isAnimating) return;
-
                 const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+                part.progress = Math.min(elapsed / duration, 1);
                 
-                const r = Math.round(startColorRgb.r + (targetColorRgb.r - startColorRgb.r) * progress);
-                const g = Math.round(startColorRgb.g + (targetColorRgb.g - startColorRgb.g) * progress);
-                const b = Math.round(startColorRgb.b + (targetColorRgb.b - startColorRgb.b) * progress);
-                
-                part.color = rgbToHex(r, g, b);
-
                 drawColoringCanvas();
                 
-                if (progress < 1) {
+                if (part.progress < 1) {
                     coloringAnimationId = requestAnimationFrame(animate);
                 } else {
-                    isAnimating = false;
+                    part.color = targetColor;
+                    part.targetColor = null;
+                    part.initialColor = null;
+                    part.progress = null;
+                    drawColoringCanvas();
                     if (partsColored.size === currentImageParts.length) {
                         showModal("All done! Next one!", 1500);
                         setTimeout(nextQuestion, 1500);
