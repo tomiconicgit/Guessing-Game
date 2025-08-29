@@ -107,12 +107,6 @@
             margin-top: 30px;
         }
         
-        #loading-message {
-            font-size: 1.5em;
-            color: #888;
-            margin-top: 40px;
-        }
-
         .image-option {
             background-color: #f8f9fa;
             border: 4px solid transparent;
@@ -155,81 +149,48 @@
             box-shadow: 0 0 20px #ea4335;
         }
 
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        .modal-content h3 {
-            margin: 0 0 15px;
-            color: #333;
-            font-size: 1.6em;
-        }
-
-        .image-label {
-            font-size: 1.2em;
-            font-weight: 600;
-            text-transform: capitalize;
-            color: #333;
-            margin-top: 12px;
-        }
-
-        /* Coloring Screen Styles */
-        #coloring-page {
+        /* Interactive Screen Styles */
+        #activity-screen {
             display: none;
             flex-direction: column;
             align-items: center;
-        }
-
-        #coloring-area {
-            width: 400px;
-            height: 400px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            margin: 20px 0;
+            justify-content: center;
             position: relative;
+            width: 100%;
+            height: 450px;
         }
         
-        #coloring-area svg {
+        #activity-screen h2 {
+            position: absolute;
+            top: 20px;
+        }
+
+        .tap-target {
+            position: absolute;
+            cursor: pointer;
+            width: 100px;
+            height: 100px;
+            transition: transform 0.2s;
+        }
+
+        .tap-target:active {
+            transform: scale(0.8);
+        }
+
+        #move-image-container {
+            position: relative;
             width: 100%;
             height: 100%;
         }
 
-        #color-palette {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .color-swatch {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #fff;
+        #move-image {
+            position: absolute;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.5s;
+            width: 180px;
+            height: 180px;
         }
 
-        .color-swatch.active {
-            transform: scale(1.1);
-            box-shadow: 0 0 0 3px #1a73e8;
-        }
     </style>
 </head>
 <body>
@@ -254,44 +215,35 @@
             <div id="image-grid"></div>
         </div>
         
-        <div id="coloring-page" class="page">
-            <h2>Color your drawing!</h2>
-            <div id="coloring-area"></div>
-            <div id="color-palette"></div>
-            <button onclick="nextQuestion()">Finish & Continue</button>
-        </div>
-    </div>
-
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-text"></h3>
-            <button onclick="closeModal()">OK</button>
+        <div id="activity-screen" class="page">
+            <h2 id="activity-title"></h2>
+            <div id="activity-area"></div>
         </div>
     </div>
 
     <script>
         const pages = document.querySelectorAll('.page');
-        const modal = document.getElementById('myModal');
-        const modalText = document.getElementById('modal-text');
+        const activityArea = document.getElementById('activity-area');
         
         let currentCategory = '';
         let availableQuestions = [];
         let isCorrect = false;
         let audioContext = null;
-        let currentColor = '#ff5722';
-
+        let correctImageName = '';
+        
+        // Use Unsplash for all images to avoid API key issues
         const gameImages = {
-            'apple': { quiz: "https://source.unsplash.com/400x400/?apple", coloring: "https://www.svgrepo.com/show/191312/apple.svg" },
-            'triangle': { quiz: "https://source.unsplash.com/400x400/?triangle", coloring: "https://www.svgrepo.com/show/511993/triangle-shape.svg" },
-            'circle': { quiz: "https://source.unsplash.com/400x400/?circle", coloring: "https://www.svgrepo.com/show/511991/circle-shape.svg" },
-            'square': { quiz: "https://source.unsplash.com/400x400/?square", coloring: "https://www.svgrepo.com/show/511990/square-shape.svg" },
-            'star': { quiz: "https://source.unsplash.com/400x400/?star", coloring: "https://www.svgrepo.com/show/511995/star-shape.svg" },
-            'house': { quiz: "https://source.unsplash.com/400x400/?house", coloring: "https://www.svgrepo.com/show/331388/house-solid.svg" },
-            'castle': { quiz: "https://source.unsplash.com/400x400/?castle", coloring: "https://www.svgrepo.com/show/383181/castle-fortress-medieval.svg" },
-            'car': { quiz: "https://source.unsplash.com/400x400/?car", coloring: "https://www.svgrepo.com/show/528351/car.svg" },
-            'tree': { quiz: "https://source.unsplash.com/400x400/?tree", coloring: "https://www.svgrepo.com/show/331393/tree-solid.svg" },
-            'robot': { quiz: "https://source.unsplash.com/400x400/?robot", coloring: "https://www.svgrepo.com/show/440536/flower-solid.svg" }, // Note: Using flower as robot SVG is hard to find
-            'flower': { quiz: "https://source.unsplash.com/400x400/?flower", coloring: "https://www.svgrepo.com/show/330965/robot-solid.svg" } // Note: Using robot as flower SVG is hard to find
+            'apple': "a red apple",
+            'triangle': "a blue triangle",
+            'circle': "a green circle",
+            'square': "a yellow square",
+            'star': "a star shape",
+            'house': "a yellow house",
+            'castle': "a cartoon castle",
+            'car': "a red car",
+            'tree': "a big green tree",
+            'robot': "a friendly robot",
+            'flower': "a blooming flower"
         };
 
         const allImages = Object.keys(gameImages);
@@ -310,18 +262,6 @@
             changePage('categories');
         }
 
-        function showModal(text, duration = 1500) {
-            modalText.innerHTML = text;
-            modal.style.display = 'flex';
-            if (duration) {
-                setTimeout(closeModal, duration);
-            }
-        }
-        
-        function closeModal() {
-            modal.style.display = 'none';
-        }
-
         function selectCategory(category) {
             currentCategory = category;
             availableQuestions = [...gameData[currentCategory]];
@@ -330,12 +270,10 @@
             loadQuestion();
         }
         
-        let correctImageName = '';
-
-        async function loadQuestion() {
+        function loadQuestion() {
             if (availableQuestions.length === 0) {
                 availableQuestions = [...gameData[currentCategory]];
-                showModal("You've seen them all! Let's shuffle and play again!", 2000);
+                alert("You've seen them all! Let's shuffle and play again!");
             }
 
             const randomIndex = Math.floor(Math.random() * availableQuestions.length);
@@ -351,7 +289,7 @@
             const shuffledImages = getShuffledImages(correctImageName);
             
             shuffledImages.forEach(imageName => {
-                const imageUrl = gameImages[imageName].quiz;
+                const imageUrl = `https://source.unsplash.com/400x400/?${encodeURIComponent(gameImages[imageName])}`;
                 const div = document.createElement('div');
                 div.classList.add('image-option');
                 div.dataset.answer = imageName;
@@ -387,21 +325,13 @@
             if (selected === correctImageName) {
                 isCorrect = true;
                 element.classList.add('correct');
-                showModal("Correct! Great job!", 1000);
                 playSound(800, 0.1);
-                setTimeout(loadColoringScreen, 1500);
+                setTimeout(loadActivity, 1500);
             } else {
                 element.classList.add('wrong');
-                showModal("Oops! Try again!", 1000);
                 playSound(200, 0.3, 'sawtooth');
                 setTimeout(() => element.classList.remove('wrong'), 1000);
             }
-        }
-
-        function nextQuestion() {
-            isCorrect = false;
-            changePage('game-page');
-            loadQuestion();
         }
 
         function playSound(frequency, duration, type = 'sine', volume = 0.5) {
@@ -418,62 +348,90 @@
             oscillator.start();
             setTimeout(() => oscillator.stop(), duration * 1000);
         }
-        
-        function loadColoringScreen() {
-            const coloringArea = document.getElementById('coloring-area');
-            const colorPalette = document.getElementById('color-palette');
-            coloringArea.innerHTML = '';
-            colorPalette.innerHTML = '';
 
-            fetch(gameImages[correctImageName].coloring)
-                .then(response => response.text())
-                .then(svgText => {
-                    coloringArea.innerHTML = svgText;
-                    setupColoring();
-                    changePage('coloring-page');
-                })
-                .catch(error => {
-                    console.error('Error loading SVG for coloring:', error);
-                    showModal('Error loading coloring image. Skipping to the next question.');
-                    setTimeout(nextQuestion, 1500);
-                });
+        function loadActivity() {
+            changePage('activity-screen');
+            activityArea.innerHTML = '';
+            isCorrect = false;
+
+            if (currentCategory === 'shapes') {
+                document.getElementById('activity-title').innerText = "Tap all the " + correctImageName.toUpperCase() + "s!";
+                loadTapActivity();
+            } else if (currentCategory === 'buildings_cars') {
+                document.getElementById('activity-title').innerText = "Move the " + correctImageName.toUpperCase() + "!";
+                loadMoveActivity();
+            }
         }
 
-        function setupColoring() {
-            const coloringArea = document.getElementById('coloring-area');
-            const svgElement = coloringArea.querySelector('svg');
-            const colorPalette = document.getElementById('color-palette');
+        function loadTapActivity() {
+            let imagesTapped = 0;
+            const totalImages = 15;
+            const imageUrl = `https://source.unsplash.com/400x400/?${encodeURIComponent(gameImages[correctImageName])}`;
             
-            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722', '#795548', '#9e9e9e', '#607d8b'];
+            for (let i = 0; i < totalImages; i++) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.classList.add('tap-target');
+                img.style.left = `${Math.random() * 80 + 10}%`;
+                img.style.top = `${Math.random() * 80 + 10}%`;
+                img.style.width = `${Math.random() * 80 + 20}px`;
+                img.style.height = img.style.width;
 
-            colors.forEach(color => {
-                const swatch = document.createElement('div');
-                swatch.classList.add('color-swatch');
-                swatch.style.backgroundColor = color;
-                swatch.onclick = () => {
-                    currentColor = color;
-                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                    swatch.classList.add('active');
-                };
-                colorPalette.appendChild(swatch);
-            });
-            
-            // Set initial active color
-            const defaultSwatch = colorPalette.querySelector(`.color-swatch[style*="${currentColor}"]`);
-            if (defaultSwatch) {
-                defaultSwatch.classList.add('active');
-            }
+                img.onclick = (e) => {
+                    e.stopPropagation();
+                    img.style.display = 'none';
+                    imagesTapped++;
+                    playSound(440, 0.05);
 
-            // Click listener for the SVG
-            svgElement.addEventListener('click', event => {
-                let target = event.target;
-                if (target.tagName === 'path' || target.tagName === 'rect' || target.tagName === 'circle' || target.tagName === 'polygon' || target.tagName === 'ellipse') {
-                    // Check if the fill is not black (which we can assume is a line)
-                    if (window.getComputedStyle(target).fill !== 'rgb(0, 0, 0)' && target.getAttribute('fill') !== 'none' && target.getAttribute('fill') !== '#000000') {
-                        target.style.fill = currentColor;
+                    if (imagesTapped === totalImages) {
+                        setTimeout(() => {
+                            alert("Great job! Moving to the next question.");
+                            changePage('game-page');
+                            loadQuestion();
+                        }, 500);
                     }
+                };
+                activityArea.appendChild(img);
+            }
+        }
+
+        function loadMoveActivity() {
+            const imageUrl = `https://source.unsplash.com/400x400/?${encodeURIComponent(gameImages[correctImageName])}`;
+            
+            const moveImageContainer = document.createElement('div');
+            moveImageContainer.id = 'move-image-container';
+            
+            const moveImage = document.createElement('img');
+            moveImage.src = imageUrl;
+            moveImage.id = 'move-image';
+            moveImage.style.left = '50%';
+            moveImage.style.top = '50%';
+            moveImage.style.transform = 'translate(-50%, -50%)';
+
+            let isMoving = false;
+            
+            moveImage.onclick = () => {
+                isMoving = true;
+                document.getElementById('activity-title').innerText = "Now tap where you want to move it!";
+            };
+
+            moveImageContainer.onclick = (e) => {
+                if (isMoving) {
+                    moveImage.style.left = `${e.offsetX}px`;
+                    moveImage.style.top = `${e.offsetY}px`;
+                    moveImage.style.transform = 'none';
+                    isMoving = false;
+                    document.getElementById('activity-title').innerText = "Awesome! Moving to the next question.";
+                    playSound(800, 0.1);
+                    setTimeout(() => {
+                        changePage('game-page');
+                        loadQuestion();
+                    }, 1500);
                 }
-            });
+            };
+
+            moveImageContainer.appendChild(moveImage);
+            activityArea.appendChild(moveImageContainer);
         }
     </script>
 </body>
