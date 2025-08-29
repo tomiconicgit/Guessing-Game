@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Ella's Fun Game">
+    <meta name="description" content="A fun game for Ella!">
+    <meta name="theme-color" content="#ff69b4">
+    <title>Ella's Fun Game</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffe4e1;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+        #container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background: #fff0f5;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            color: #ff1493;
+            font-size: 2em;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        h2 {
+            color: #db7093;
+        }
+        button {
+            background-color: #ffb6c1;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        button:hover {
+            background-color: #ff69b4;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .option {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+        }
+        #score, #level {
+            font-size: 1.2em;
+            color: #ff69b4;
+        }
+        #game-area {
+            margin-top: 20px;
+        }
+        input, select {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ffb6c1;
+            margin: 10px;
+            font-size: 1em;
+            width: 80%;
+        }
+        .hidden {
+            display: none;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff69b4;
+            animation: confetti-fall 2s linear infinite;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        #confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #timer {
+            font-size: 1.5em;
+            color: #ff1493;
+        }
+        #thinking {
+            font-size: 1.2em;
+            color: #db7093;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="confetti-container"></div>
+    <div id="container">
+        <h1>Welcome to Ella's Fun Game!</h1>
+        <p>Hi Ella! Choose a game to play:</p>
+        <button onclick="startGuessingGame()">Guessing Game</button>
+        <button onclick="startLyingGame()">Lying Game</button>
+        <div id="game-area" class="hidden">
+            <!-- Game content will go here -->
+        </div>
+    </div>
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const confettiContainer = document.getElementById('confetti-container');
+        let guessingLevel = 1;
+        let guessingScore = 0;
+        let lyingLevel = 1;
+        let lyingScore = 0;
+        let currentQuestionIndex = -1;
+        let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let timerInterval;
+        let tickingOscillator;
+
+        function playSound(frequency, duration, type = 'sine', volume = 0.5) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            gainNode.gain.value = volume;
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+            }, duration * 1000);
+        }
+
+        function playCorrect() {
+            playSound(800, 0.1);
+            setTimeout(() => playSound(1200, 0.1), 100);
+            setTimeout(() => playSound(1600, 0.2), 200);
+        }
+
+        function playWrong() {
+            playSound(200, 0.3, 'sawtooth');
+        }
+
+        function playLevelUp() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => playSound(400 + i * 200, 0.1), i * 100);
+            }
+        }
+
+        function playThinking() {
+            playSound(300, 0.2, 'triangle');
+            setTimeout(() => playSound(300, 0.2, 'triangle'), 500);
+            setTimeout(() => playSound(300, 0.2, 'triangle'), 1000);
+        }
+
+        function startTicking() {
+            tickingOscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            tickingOscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            tickingOscillator.frequency.value = 1000;
+            tickingOscillator.type = 'square';
+            gainNode.gain.value = 0.1;
+            tickingOscillator.start();
+            setInterval(() => {
+                gainNode.gain.value = 0.1;
+                setTimeout(() => gainNode.gain.value = 0, 50);
+            }, 1000);
+        }
+
+        function stopTicking() {
+            if (tickingOscillator) {
+                tickingOscillator.stop();
+            }
+        }
+
+        const guessingQuestions = [
+            // ... (keep the same questions as before)
+            { question: "What is the name of the K-pop group with songs like 'Kill This Love'?", options: ["Blackpink", "BTS", "Twice", "EXO"], answer: "Blackpink", level: 1 },
+            { question: "In Demon Slayer, what does Tanjiro use to fight demons?", options: ["Sword", "Gun", "Magic Wand", "Book"], answer: "Sword", level: 1 },
+            { question: "Finish the song: 'Baby shark, doo doo doo doo doo doo...'", options: ["Baby shark", "Mommy shark", "Daddy shark", "Grandma shark"], answer: "Baby shark", level: 1 },
+            { question: "What is a popular trend on TikTok? Dancing to...", options: ["Music", "Books", "Math problems", "Cooking"], answer: "Music", level: 1 },
+            { question: "Who sings 'Shake It Off'?", options: ["Taylor Swift", "Ariana Grande", "Billie Eilish", "Katy Perry"], answer: "Taylor Swift", level: 1 },
+            { question: "In Frozen, who has ice powers?", options: ["Elsa", "Anna", "Olaf", "Kristoff"], answer: "Elsa", level: 1 },
+            { question: "What is a Squishmallow?", options: ["A soft toy", "A game", "A song", "A food"], answer: "A soft toy", level: 1 },
+
+            { question: "Which K-pop idol is known as the 'Golden Maknae' in BTS?", options: ["Jungkook", "V", "Jimin", "Suga"], answer: "Jungkook", level: 2 },
+            { question: "In Demon Slayer, who is Tanjiro's sister?", options: ["Nezuko", "Zenitsu", "Inosuke", "Giyu"], answer: "Nezuko", level: 2 },
+            { question: "Finish the lyric: 'We don't talk anymore, like we used to...'", options: ["Do", "Go", "See", "Eat"], answer: "Do", level: 2 },
+            { question: "What is a current trend? Wearing oversized...?", options: ["Hoodies", "Shoes", "Hats", "Glasses"], answer: "Hoodies", level: 2 },
+            { question: "What movie has Elsa and Anna?", options: ["Frozen", "Moana", "Tangled", "Cinderella"], answer: "Frozen", level: 2 },
+            { question: "In Moana, what does Moana love?", options: ["The ocean", "The mountains", "The desert", "The city"], answer: "The ocean", level: 2 },
+            { question: "What is a popular YouTube channel for kids like Cocomelon good for?", options: ["Nursery rhymes", "Math lessons", "Cooking", "Sports"], answer: "Nursery rhymes", level: 2 },
+
+            { question: "Which Blackpink member released 'Solo'?", options: ["Jennie", "Lisa", "Rosé", "Jisoo"], answer: "Jennie", level: 3 },
+            { question: "In Demon Slayer, what is the name of the demon king?", options: ["Muzan", "Akaza", "Doma", "Kokushibo"], answer: "Muzan", level: 3 },
+            { question: "Who sings 'Bad Guy'?", options: ["Billie Eilish", "Olivia Rodrigo", "Doja Cat", "Megan Thee Stallion"], answer: "Billie Eilish", level: 3 },
+            { question: "What is a viral challenge? The ... dance.", options: ["Renegade", "Running", "Jumping", "Eating"], answer: "Renegade", level: 3 },
+            { question: "Finish: 'I'm a Barbie girl, in a Barbie...'", options: ["World", "House", "Car", "Dream"], answer: "World", level: 3 },
+            { question: "In Snow White (2025), who plays Snow White?", options: ["Rachel Zegler", "Gal Gadot", "Emma Watson", "Ariana Grande"], answer: "Rachel Zegler", level: 3 },
+            { question: "What trend involves making friendship bracelets?", options: ["Taylor Swift inspired", "Sports", "Cooking", "Reading"], answer: "Taylor Swift inspired", level: 3 },
+            { question: "Popular YouTube content for girls: Making...?", options: ["Slime", "Cars", "Trucks", "Tools"], answer: "Slime", level: 3 },
+
+            { question: "Which K-pop group sang 'Dynamite'?", options: ["BTS", "Blackpink", "EXO", "Twice"], answer: "BTS", level: 4 },
+            { question: "In Demon Slayer, what breathing style does Zenitsu use?", options: ["Thunder", "Water", "Flame", "Wind"], answer: "Thunder", level: 4 },
+            { question: "Who sings 'Drivers License'?", options: ["Olivia Rodrigo", "Taylor Swift", "Ariana Grande", "Billie Eilish"], answer: "Olivia Rodrigo", level: 4 },
+            { question: "What trend involves stacking items creatively?", options: ["Squishmallow collecting", "Book stacking", "Food stacking", "Toy stacking"], answer: "Squishmallow collecting", level: 4 },
+            { question: "Finish the lyric: 'Shape of you, just as nature...'", options: ["Intended", "Made", "Created", "Built"], answer: "Intended", level: 4 },
+            { question: "In Zootopia 2 (2025), who returns as Judy Hopps?", options: ["Ginnifer Goodwin", "Idina Menzel", "Kristen Bell", "Auli'i Cravalho"], answer: "Ginnifer Goodwin", level: 4 },
+            { question: "A 2025 K-pop trend: More ... songs.", options: ["EDM/hyper-pop", "Classical", "Jazz", "Country"], answer: "EDM/hyper-pop", level: 4 },
+            { question: "Popular YouTube for kids: Blippi teaches about...?", options: ["Colors and vehicles", "Advanced math", "History", "Politics"], answer: "Colors and vehicles", level: 4 },
+
+            { question: "Which Twice member is from Taiwan?", options: ["Tzuyu", "Nayeon", "Jihyo", "Mina"], answer: "Tzuyu", level: 5 },
+            { question: "In Demon Slayer, who is the Hashira of Water?", options: ["Giyu Tomioka", "Shinobu Kocho", "Kyojuro Rengoku", "Tengen Uzui"], answer: "Giyu Tomioka", level: 5 },
+            { question: "Who sings 'Levitating'?", options: ["Dua Lipa", "Doja Cat", "Cardi B", "Megan Thee Stallion"], answer: "Dua Lipa", level: 5 },
+            { question: "What is a popular ASMR trend?", options: ["Whispering", "Shouting", "Running", "Jumping"], answer: "Whispering", level: 5 },
+            { question: "Finish: 'Old town road, I'm gonna take my horse...'", options: ["To the old town road", "To the city", "To the farm", "To the store"], answer: "To the old town road", level: 5 },
+            { question: "In Lilo & Stitch (2025), what is Stitch?", options: ["An alien", "A dog", "A cat", "A robot"], answer: "An alien", level: 5 },
+            { question: "2025 K-pop hit by SEVENTEEN?", options: ["THUNDER", "Dynamite", "Butter", "Pink Venom"], answer: "THUNDER", level: 5 },
+            { question: "YouTube channel for educational fun: National Geographic Kids features...?", options: ["Animals and science", "Cartoons only", "Music videos", "Gaming"], answer: "Animals and science", level: 5 },
+            { question: "Trend for 2025: DIY ... kits.", options: ["Fashion and building", "Car repair", "Home building", "Farming"], answer: "Fashion and building", level: 5 }
+        ];
+
+        const lyingCategories = [
+            { level: 1, prompt: "Pick your favorite color, but you can lie!", options: ["Pink", "Blue", "Green", "Yellow"] },
+            { level: 1, prompt: "Pick your favorite animal, but you can lie!", options: ["Unicorn", "Dog", "Cat", "Bird"] },
+            { level: 1, prompt: "Pick your favorite Disney princess, but you can lie!", options: ["Elsa", "Moana", "Belle", "Ariel"] },
+
+            { level: 2, prompt: "Pick your favorite food, but you can lie!", options: ["Ice Cream", "Pizza", "Candy", "Fruit"] },
+            { level: 2, prompt: "Pick your favorite song, but you can lie!", options: ["Baby Shark", "Shake It Off", "Bad Guy", "Dynamite"] },
+            { level: 2, prompt: "Pick your favorite YouTube channel, but you can lie!", options: ["Cocomelon", "Blippi", "Peppa Pig", "Ryan's World"] },
+
+            { level: 3, prompt: "Pick your favorite K-pop group, but you can lie!", options: ["Blackpink", "BTS", "Twice", "Stray Kids"] },
+            { level: 3, prompt: "Pick your favorite trend, but you can lie!", options: ["TikTok Dance", "ASMR", "Squishmallows", "Friendship Bracelets"] },
+            { level: 3, prompt: "Pick your favorite Disney movie, but you can lie!", options: ["Frozen", "Moana", "Snow White", "Zootopia"] },
+
+            { level: 4, prompt: "Pick your favorite movie, but you can lie!", options: ["Frozen", "Moana", "Barbie", "Demon Slayer Movie"] },
+            { level: 4, prompt: "Pick your favorite character, but you can lie!", options: ["Elsa", "Tanjiro", "Barbie", "Nezuko"] },
+            { level: 4, prompt: "Pick your favorite 2025 trend, but you can lie!", options: ["Slime Making", "Minecraft", "K-pop EDM", "DIY Fashion"] },
+
+            { level: 5, prompt: "Pick your favorite hobby, but you can lie!", options: ["Dancing to K-pop", "Watching Demon Slayer", "Collecting Squishmallows", "Making Slime"] },
+            { level: 5, prompt: "Pick your dream pet, but you can lie!", options: ["Dragon", "Pegasus", "Phoenix", "Mermaid"] },
+            { level: 5, prompt: "Pick your favorite YouTube content, but you can lie!", options: ["Educational Videos", "Toy Reviews", "Challenges", "Music Covers"] }
+        ];
+
+        function startGuessingGame() {
+            gameArea.innerHTML = `
+                <h2>Guessing Game</h2>
+                <p id="guessing-level">Level: ${guessingLevel}</p>
+                <p id="guessing-score">Score: ${guessingScore}</p>
+                <div id="question"></div>
+                <div id="options"></div>
+                <button onclick="nextGuessingQuestion()" id="next-btn" class="hidden">Next Question</button>
+                <button onclick="backToMenu()">Back to Menu</button>
+            `;
+            gameArea.classList.remove('hidden');
+            nextGuessingQuestion();
+        }
+
+        function nextGuessingQuestion() {
+            const levelQuestions = guessingQuestions.filter(q => q.level === guessingLevel);
+            if (levelQuestions.length === 0) {
+                gameArea.innerHTML += '<p>Congratulations Ella! You completed all levels in Guessing Game!</p>';
+                return;
+            }
+            currentQuestionIndex = Math.floor(Math.random() * levelQuestions.length);
+            const q = levelQuestions[currentQuestionIndex];
+            document.getElementById('question').innerText = q.question;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.classList.add('option');
+                btn.onclick = () => checkGuessingAnswer(opt, q.answer);
+                optionsDiv.appendChild(btn);
+            });
+            document.getElementById('next-btn').classList.add('hidden');
+        }
+
+        function checkGuessingAnswer(selected, correct) {
+            let levelUp = false;
+            if (selected === correct) {
+                playCorrect();
+                guessingScore += 10 * guessingLevel;
+                document.getElementById('guessing-score').innerText = `Score: ${guessingScore}`;
+                if (guessingScore >= 50 * guessingLevel) {
+                    guessingLevel++;
+                    levelUp = true;
+                    if (guessingLevel > 5) {
+                        guessingLevel = 5;
+                        alert('You reached the max level, Ella!');
+                    } else {
+                        playLevelUp();
+                    }
+                    document.getElementById('guessing-level').innerText = `Level: ${guessingLevel}`;
+                }
+                alert('Yay Ella! Correct!');
+                showConfetti();
+            } else {
+                playWrong();
+                alert('Oops! Try again next time!');
+            }
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function startLyingGame() {
+            gameArea.innerHTML = `
+                <h2>Lying Game</h2>
+                <p id="lying-level">Level: ${lyingLevel}</p>
+                <p id="lying-score">Score: ${lyingScore}</p>
+                <div id="lying-prompt"></div>
+                <select id="lying-choice"></select>
+                <div id="timer"></div>
+                <button onclick="submitLie()" id="tell-btn">Tell Me!</button>
+                <div id="thinking" class="hidden">Thinking...</div>
+                <div id="guess-result"></div>
+                <button onclick="nextLyingRound()" id="next-lying-btn" class="hidden">Next Round</button>
+                <button onclick="backToMenu()">Back to Menu</button>
+            `;
+            gameArea.classList.remove('hidden');
+            nextLyingRound();
+        }
+
+        function nextLyingRound() {
+            stopTicking();
+            const levelCategories = lyingCategories.filter(c => c.level === lyingLevel);
+            if (levelCategories.length === 0) {
+                gameArea.innerHTML += '<p>Congratulations Ella! You completed all levels in Lying Game!</p>';
+                return;
+            }
+            const categoryIndex = Math.floor(Math.random() * levelCategories.length);
+            const cat = levelCategories[categoryIndex];
+            document.getElementById('lying-prompt').innerText = cat.prompt;
+            const select = document.getElementById('lying-choice');
+            select.innerHTML = '';
+            cat.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.innerText = opt;
+                select.appendChild(option);
+            });
+            document.getElementById('guess-result').innerHTML = '';
+            document.getElementById('next-lying-btn').classList.add('hidden');
+            document.getElementById('thinking').classList.add('hidden');
+            document.getElementById('tell-btn').disabled = false;
+            startTimer(15); // 15 seconds timer
+            startTicking();
+        }
+
+        function startTimer(seconds) {
+            let timeLeft = seconds;
+            document.getElementById('timer').innerText = `Time left: ${timeLeft}s`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = `Time left: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    stopTicking();
+                    alert('Time\'s up, Ella! Let\'s try again.');
+                    nextLyingRound();
+                }
+            }, 1000);
+        }
+
+        function submitLie() {
+            clearInterval(timerInterval);
+            stopTicking();
+            document.getElementById('tell-btn').disabled = true;
+            document.getElementById('thinking').classList.remove('hidden');
+            playThinking();
+            setTimeout(() => {
+                guessLie();
+            }, 3000); // 3 seconds thinking
+        }
+
+        function guessLie() {
+            document.getElementById('thinking').classList.add('hidden');
+            const choice = document.getElementById('lying-choice').value;
+            const isLying = Math.random() < (0.3 + (lyingLevel * 0.1)) ? 'lying' : 'telling the truth';
+            const resultDiv = document.getElementById('guess-result');
+            resultDiv.innerHTML = `<p>Ella, you said "${choice}". I think you're ${isLying}!</p>`;
+            const wasCorrect = confirm('Was I right, Ella? (OK for yes, Cancel for no)');
+            let levelUp = false;
+            if (wasCorrect) {
+                lyingScore += 10 * lyingLevel;
+                document.getElementById('lying-score').innerText = `Score: ${lyingScore}`;
+                if (lyingScore >= 30 * lyingLevel) {
+                    lyingLevel++;
+                    levelUp = true;
+                    if (lyingLevel > 5) {
+                        lyingLevel = 5;
+                        alert('You reached the max level in Lying Game, Ella!');
+                    } else {
+                        playLevelUp();
+                    }
+                    document.getElementById('lying-level').innerText = `Level: ${lyingLevel}`;
+                }
+                alert('Yay! I guessed right!');
+                showConfetti();
+            } else {
+                alert('Oh no! I was wrong. Better luck next time for me!');
+            }
+            document.getElementById('next-lying-btn').classList.remove('hidden');
+            document.getElementById('tell-btn').disabled = false;
+        }
+
+        function backToMenu() {
+            clearInterval(timerInterval);
+            stopTicking();
+            gameArea.classList.add('hidden');
+            guessingLevel = 1;
+            guessingScore = 0;
+            lyingLevel = 1;
+            lyingScore = 0;
+            confettiContainer.innerHTML = '';
+        }
+
+        function showConfetti() {
+            confettiContainer.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.animationDelay = `${Math.random() * 2}s`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confettiContainer.appendChild(confetti);
+            }
+            setTimeout(() => { confettiContainer.innerHTML = ''; }, 3000);
+        }
+    </script>
+</body>
+</html>
