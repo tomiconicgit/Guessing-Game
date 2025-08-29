@@ -287,6 +287,8 @@
         let partsColored = new Set();
         let currentImageParts = [];
         let coloringAnimationId = null;
+        let animationFrameId = null;
+        let audioContext = null;
 
         function hexToRgb(hex) {
             const r = parseInt(hex.slice(1, 3), 16);
@@ -336,13 +338,9 @@
                     { name: 'leaf', path: new Path2D(), color: defaultColors[1] },
                     { name: 'stem', path: new Path2D(), color: defaultColors[2] }
                 ];
-                // Enhanced body with more organic shape
                 parts[0].path.moveTo(150, 45); parts[0].path.bezierCurveTo(225, 45, 270, 105, 270, 165); parts[0].path.bezierCurveTo(270, 225, 210, 270, 150, 270); parts[0].path.bezierCurveTo(90, 270, 30, 225, 30, 165); parts[0].path.bezierCurveTo(30, 105, 75, 45, 150, 45);
-                // Leaf
                 parts[1].path.moveTo(165, 45); parts[1].path.bezierCurveTo(180, 30, 210, 30, 225, 45); parts[1].path.bezierCurveTo(210, 60, 180, 60, 165, 45);
-                // Stem
                 parts[2].path.moveTo(143, 75); parts[2].path.bezierCurveTo(135, 45, 165, 45, 158, 75);
-                // Add highlight for enhancement
                 const highlight = new Path2D();
                 highlight.arc(90, 90, 30, 0, Math.PI * 2);
                 parts.push({ name: 'highlight', path: highlight, color: lighten(defaultColors[0], 0.3) });
@@ -388,17 +386,11 @@
                     { name: 'window2', path: new Path2D(), color: defaultColors[4] },
                     { name: 'chimney', path: new Path2D(), color: defaultColors[5] }
                 ];
-                // Roof
                 parts[0].path.moveTo(150, 45); parts[0].path.lineTo(30, 135); parts[0].path.lineTo(270, 135); parts[0].path.closePath();
-                // Walls
                 parts[1].path.rect(45, 135, 210, 135);
-                // Door
                 parts[2].path.rect(120, 210, 60, 60);
-                // Window 1
                 parts[3].path.rect(75, 165, 38, 38);
-                // Window 2
                 parts[4].path.rect(188, 165, 38, 38);
-                // Chimney enhancement
                 parts[5].path.rect(210, 75, 30, 60);
                 if (typeof colors === 'string') {
                     parts.forEach((part, i) => {
@@ -418,17 +410,11 @@
                     { name: 'door', path: new Path2D(), color: defaultColors[4] },
                     { name: 'battlement', path: new Path2D(), color: defaultColors[5] }
                 ];
-                // Main Wall
                 parts[0].path.rect(60, 100, 180, 180);
-                // Left Tower
                 parts[1].path.rect(30, 45, 60, 235);
-                // Right Tower
                 parts[2].path.rect(210, 45, 60, 235);
-                // Flag
                 parts[3].path.moveTo(250, 60); parts[3].path.lineTo(265, 45); parts[3].path.lineTo(280, 60); parts[3].path.lineTo(265, 75); parts[3].path.closePath();
-                // Door
                 parts[4].path.rect(130, 200, 40, 80);
-                // Battlement enhancement
                 parts[5].path.rect(60, 90, 180, 10); parts[5].path.rect(70, 80, 20, 10); parts[5].path.rect(110, 80, 20, 10); parts[5].path.rect(150, 80, 20, 10); parts[5].path.rect(190, 80, 20, 10); parts[5].path.rect(210, 80, 20, 10);
                 if (typeof colors === 'string') {
                     parts.forEach((part, i) => {
@@ -448,16 +434,11 @@
                     { name: 'window', path: new Path2D(), color: defaultColors[4] },
                     { name: 'headlight', path: new Path2D(), color: defaultColors[5] }
                 ];
-                // Body
                 parts[0].path.moveTo(30, 180); parts[0].path.lineTo(270, 180); parts[0].path.lineTo(270, 240); parts[0].path.lineTo(30, 240); parts[0].path.closePath();
-                // Roof
                 parts[1].path.moveTo(75, 180); parts[1].path.lineTo(135, 120); parts[1].path.lineTo(225, 120); parts[1].path.lineTo(240, 180); parts[1].path.closePath();
-                // Wheels
                 parts[2].path.arc(90, 240, 30, 0, 2 * Math.PI);
                 parts[3].path.arc(210, 240, 30, 0, 2 * Math.PI);
-                // Window
                 parts[4].path.rect(90, 130, 100, 30);
-                // Headlight enhancement
                 parts[5].path.arc(255, 200, 15, 0, 2 * Math.PI);
                 if (typeof colors === 'string') {
                     parts.forEach((part, i) => {
@@ -474,9 +455,7 @@
                     { name: 'leaves1', path: new Path2D(), color: defaultColors[1] },
                     { name: 'leaves2', path: new Path2D(), color: defaultColors[2] }
                 ];
-                // Trunk
                 parts[0].path.rect(125, 180, 50, 90);
-                // Leaves enhanced with layers
                 parts[1].path.arc(150, 150, 120, 0, 2 * Math.PI);
                 parts[2].path.arc(150, 120, 80, 0, 2 * Math.PI);
                 if (typeof colors === 'string') {
@@ -498,7 +477,6 @@
                 parts[0].path.rect(100, 50, 100, 70);
                 parts[1].path.rect(80, 120, 140, 120);
                 parts[2].path.moveTo(150, 50); parts[2].path.lineTo(150, 30); parts[2].path.arc(150, 30, 10, 0, 2 * Math.PI);
-                // Eyes enhancement
                 parts[3].path.arc(130, 80, 10, 0, 2 * Math.PI); parts[3].path.arc(170, 80, 10, 0, 2 * Math.PI);
                 if (typeof colors === 'string') {
                     parts.forEach((part, i) => {
@@ -519,7 +497,6 @@
                 parts[0].path.arc(150, 150, 120, 0, 2 * Math.PI);
                 parts[1].path.arc(150, 150, 50, 0, 2 * Math.PI);
                 parts[2].path.rect(140, 270, 20, 30);
-                // Leaf enhancement
                 parts[3].path.moveTo(140, 280); parts[3].path.bezierCurveTo(120, 260, 100, 280, 120, 300); parts[3].path.closePath();
                 if (typeof colors === 'string') {
                     parts.forEach((part, i) => {
@@ -549,7 +526,9 @@
         function showModal(text, duration = 1500) {
             modalText.innerHTML = text;
             modal.style.display = 'flex';
-            setTimeout(closeModal, duration);
+            if (duration) {
+                setTimeout(closeModal, duration);
+            }
         }
         
         function closeModal() {
@@ -563,23 +542,22 @@
             changePage('game-page');
             loadQuestion();
         }
-
+        
+        let correctImageName = '';
         function loadQuestion() {
             if (availableQuestions.length === 0) {
-                // Refill the pool to make the game "endless"
                 availableQuestions = [...gameData[currentCategory]];
                 showModal("You've seen them all! Let's shuffle and play again!", 2000);
             }
 
             const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-            const correctImageName = availableQuestions[randomIndex];
+            correctImageName = availableQuestions[randomIndex];
             
-            // Remove the selected question from the available pool
             availableQuestions.splice(randomIndex, 1);
 
             const randomCorrectColor = getRandomColor();
             const correctLabel = `${randomColorName(randomCorrectColor).toUpperCase()} ${correctImageName.toUpperCase()}`;
-            document.getElementById('question-text').innerText = correctLabel;
+            document.getElementById('question-text').innerText = `Find the ${correctLabel}`;
 
             const grid = document.getElementById('image-grid');
             grid.innerHTML = '';
@@ -601,7 +579,7 @@
                 const randomColor = (imageName === correctImageName) ? randomCorrectColor : getRandomColor();
                 const parts = gameDrawings[imageName](ctx, randomColor);
                 parts.forEach(part => {
-                    ctx.fillStyle = createGradient(ctx, part.color);
+                    ctx.fillStyle = createGradient(ctx, part.color, 0, 0, 0, 300);
                     ctx.fill(part.path);
                     ctx.strokeStyle = '#333';
                     ctx.lineWidth = 2;
@@ -614,7 +592,7 @@
                 div.prepend(label);
 
                 div.appendChild(canvas);
-                div.onclick = () => checkAnswer(imageName, correctImageName, div);
+                div.onclick = () => checkAnswer(imageName, div);
                 grid.appendChild(div);
             });
 
@@ -642,10 +620,10 @@
             return colorMap[hex] || 'UNKNOWN';
         }
 
-        function checkAnswer(selected, correct, element) {
+        function checkAnswer(selected, element) {
             if (isCorrect) return;
 
-            if (selected.includes(correct)) {
+            if (selected === correctImageName) {
                 isCorrect = true;
                 element.classList.add('correct');
                 showModal("Correct! Great job!", 1000);
@@ -659,7 +637,7 @@
                 ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
                 
                 const shades = ['#888888', '#999999', '#aaaaaa', '#bbbbbb', '#cccccc', '#dddddd']; 
-                currentImageParts = gameDrawings[correct](ctx, shades);
+                currentImageParts = gameDrawings[correctImageName](ctx, shades);
                 
                 // Initial draw of the image with outlines
                 drawColoringCanvas();
@@ -674,7 +652,7 @@
                     const y = (event.clientY - rect.top) * (coloringCanvas.height / rect.height);
                     
                     const partToColor = currentImageParts.find(part => {
-                        return ctx.isPointInPath(part.path, x, y) && !partsColored.has(part.name);
+                        return !partsColored.has(part.name) && ctx.isPointInPath(part.path, x, y);
                     });
 
                     if (partToColor) {
@@ -700,19 +678,17 @@
             ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
             currentImageParts.forEach(part => {
                 let fillStyle;
-                if (part.targetColor) {
-                    if (part.progress >= 1) {
-                        fillStyle = createGradient(ctx, part.targetColor);
-                    } else {
-                        const grad = ctx.createLinearGradient(0, 0, 0, coloringCanvas.height);
-                        grad.addColorStop(0, part.targetColor);
-                        grad.addColorStop(part.progress, part.targetColor);
-                        grad.addColorStop(part.progress, part.initialColor);
-                        grad.addColorStop(1, part.initialColor);
-                        fillStyle = grad;
-                    }
+                if (part.progress !== undefined) {
+                    const grad = ctx.createLinearGradient(0, 0, 0, coloringCanvas.height);
+                    const startColor = part.initialColor;
+                    const endColor = part.targetColor;
+                    grad.addColorStop(0, startColor);
+                    grad.addColorStop(part.progress, endColor);
+                    grad.addColorStop(part.progress, startColor);
+                    grad.addColorStop(1, startColor);
+                    fillStyle = grad;
                 } else {
-                    fillStyle = createGradient(ctx, part.color);
+                    fillStyle = createGradient(ctx, part.color, 0, 0, 0, coloringCanvas.height);
                 }
                 ctx.fillStyle = fillStyle;
                 ctx.fill(part.path);
@@ -723,7 +699,7 @@
         }
 
         function animateColorFill(ctx, part, targetColor) {
-            const duration = 1000; // Slower for flowing effect
+            const duration = 1000;
             const startTime = performance.now();
             part.initialColor = part.color;
             part.targetColor = targetColor;
@@ -739,11 +715,14 @@
                     coloringAnimationId = requestAnimationFrame(animate);
                 } else {
                     part.color = targetColor;
-                    part.targetColor = null;
-                    part.initialColor = null;
-                    part.progress = null;
+                    delete part.initialColor;
+                    delete part.targetColor;
+                    delete part.progress;
                     drawColoringCanvas();
-                    if (partsColored.size === currentImageParts.length) {
+                    if (partsColored.size === currentImageParts.filter(p => p.name !== 'highlight').length) {
+                        if (animationFrameId) {
+                            cancelAnimationFrame(animationFrameId);
+                        }
                         showModal("All done! Next one!", 1500);
                         setTimeout(nextQuestion, 1500);
                     }
@@ -752,15 +731,12 @@
             coloringAnimationId = requestAnimationFrame(animate);
         }
 
-        let animationFrameId = null;
         function animateColorableParts(ctx) {
             function animate(timestamp) {
-                // Clear and redraw canvas each frame to show pulse animation
                 drawColoringCanvas();
-
                 const time = timestamp * 0.001;
                 currentImageParts.forEach(part => {
-                    if (!partsColored.has(part.name)) {
+                    if (!partsColored.has(part.name) && part.name !== 'highlight') {
                         const scale = 1 + Math.sin(time * 4) * 0.03;
                         ctx.save();
                         ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
@@ -772,6 +748,9 @@
                     }
                 });
                 animationFrameId = requestAnimationFrame(animate);
+            }
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
             }
             animationFrameId = requestAnimationFrame(animate);
         }
@@ -791,7 +770,6 @@
             };
         });
 
-        let audioContext = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(frequency, duration, type = 'sine', volume = 0.5) {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
