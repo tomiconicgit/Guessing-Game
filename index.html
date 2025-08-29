@@ -106,6 +106,12 @@
             gap: 30px;
             margin-top: 30px;
         }
+        
+        #loading-message {
+            font-size: 1.5em;
+            color: #888;
+            margin-top: 40px;
+        }
 
         .image-option {
             background-color: #f8f9fa;
@@ -119,12 +125,6 @@
             align-items: center;
             animation: fadeIn 1s ease-out;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        #loading-message {
-            font-size: 1.5em;
-            color: #888;
-            margin-top: 40px;
         }
 
         .image-option img {
@@ -194,7 +194,7 @@
 <body>
     <div id="game-container">
         <div id="menu" class="page active">
-            <h1>🎨 Guess & Color! 🖍️</h1>
+            <h1>🎨 Guess & Play! 🕹️</h1>
             <p>Ready to have some fun?</p>
             <button onclick="startGame()">Start Playing</button>
         </div>
@@ -210,7 +210,7 @@
         <div id="game-page" class="page">
             <h2 id="game-title"></h2>
             <p id="question-text"></p>
-            <div id="loading-message" style="display: none;">Loading images...</div>
+            <div id="loading-message" style="display: none;">Generating images...</div>
             <div id="image-grid"></div>
         </div>
     </div>
@@ -223,8 +223,8 @@
     </div>
 
     <script>
-        const GOOGLE_API_KEY = 'YOUR_API_KEY';
-        const GOOGLE_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
+        const STABILITY_API_KEY = 'sk-FKaEXInlk4HFj5JFJeciirYT6PaQyUJk4WVHP04POQNvX8uG';
+        const STABILITY_API_URL = "https://api.stability.ai/v2beta/stable-image/generate/sd3";
         
         const pages = document.querySelectorAll('.page');
         const modal = document.getElementById('myModal');
@@ -237,11 +237,11 @@
         let audioContext = null;
 
         const gamePrompts = {
-            'apple': "A simple, vibrant, digital art apple. Stylized, clean, high-quality cartoon.",
-            'triangle': "A colorful, digital art triangle. Simple, geometric, high-quality cartoon.",
-            'circle': "A vibrant, digital art circle. Simple, geometric, high-quality cartoon.",
-            'square': "A colorful, digital art square. Simple, geometric, high-quality cartoon.",
-            'star': "A vibrant, digital art star. Simple, stylized, high-quality cartoon.",
+            'apple': "A vibrant, digital art apple. Simple, stylized, clean.",
+            'triangle': "A colorful, digital art triangle. Simple, stylized, clean.",
+            'circle': "A vibrant, digital art circle. Simple, stylized, clean.",
+            'square': "A vibrant, digital art square. Simple, stylized, clean.",
+            'star': "A vibrant, digital art star. Simple, stylized, clean.",
             'house': "A cute, cartoon house with bright colors. Simple, stylized, clean.",
             'castle': "A whimsical, cartoon castle. Simple, stylized, clean.",
             'car': "A fun, cartoon car with big wheels. Simple, stylized, clean.",
@@ -374,28 +374,28 @@
         }
 
         async function fetchImageFromAPI(prompt) {
-            const response = await fetch(`${GOOGLE_API_URL}?key=${GOOGLE_API_KEY}`, {
+            const response = await fetch(STABILITY_API_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
+                    "Accept": "image/jpeg",
+                    "Authorization": `Bearer ${STABILITY_API_KEY}`
                 },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `Generate a photorealistic, high-quality image of: ${prompt}.`
-                        }]
-                    }]
+                    prompt: prompt,
+                    output_format: "jpeg",
+                    mode: "text-to-image",
+                    aspect_ratio: "1:1"
                 })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(JSON.stringify(errorData));
+                const errorBody = await response.json();
+                throw new Error(`API call failed with status ${response.status}: ${JSON.stringify(errorBody)}`);
             }
 
-            const data = await response.json();
-            const base64Data = data.candidates[0].content.parts[0].text;
-            return `data:image/jpeg;base64,${base64Data}`;
+            const blob = await response.blob();
+            return URL.createObjectURL(blob);
         }
 
         function playSound(frequency, duration, type = 'sine', volume = 0.5) {
