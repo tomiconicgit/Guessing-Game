@@ -112,6 +112,12 @@
             height: 120px;
         }
 
+        /* Set SVG fills to solid black for quiz questions */
+        .image-option svg * {
+            fill: #000;
+            stroke: none; /* No outline needed on solid shapes */
+        }
+
         .image-option:hover {
             animation: bounce 0.5s infinite;
         }
@@ -135,7 +141,27 @@
             border-color: #ff4500;
         }
 
-        #coloring DO NOT USE
+        /* Coloring area styles */
+        #coloring-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #svg-container {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        /* Coloring SVGs start with no fill and black outlines */
+        #svg-container svg * {
+            fill: none;
+            stroke: #333;
+            stroke-width: 3;
+            transition: fill 0.7s ease-in-out, stroke 0.3s;
+        }
+
         .color-palette {
             display: flex;
             flex-wrap: wrap;
@@ -200,16 +226,8 @@
         }
 
         @keyframes fillAnimation {
-            0% {
-                fill: transparent;
-                transform: scale(0.5);
-                opacity: 0.3;
-            }
-            100% {
-                fill: var(--fill-color);
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { fill: transparent; }
+            100% { fill: var(--fill-color); }
         }
     </style>
 </head>
@@ -271,20 +289,20 @@
                     question: "APPLE",
                     answer: "apple",
                     images: {
-                        'apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="apple-parts"><path id="apple-body" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="apple-leaf" d="M110,30 C120,20 140,20 150,30 C140,40 120,40 110,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="apple-stem" d="M95,50 C90,30 110,30 105,50 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
-                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
-                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>'
+                        'apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="apple-parts"><path id="apple-body" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z"/><path id="apple-leaf" d="M110,30 C120,20 140,20 150,30 C140,40 120,40 110,30 Z"/><path id="apple-stem" d="M95,50 C90,30 110,30 105,50 Z"/></g></svg>',
+                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180"/></svg>',
+                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85"/></svg>',
+                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170"/></svg>'
                     }
                 },
                 {
                     question: "TRIANGLE",
                     answer: "triangle",
                     images: {
-                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
-                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
-                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
-                        'star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,20 120,80 180,80 130,120 150,180 100,140 50,180 70,120 20,80 80,80" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>'
+                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85"/></svg>',
+                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170"/></svg>',
+                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180"/></svg>',
+                        'star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,20 120,80 180,80 130,120 150,180 100,140 50,180 70,120 20,80 80,80"/></svg>'
                     }
                 }
             ],
@@ -293,20 +311,20 @@
                     question: "CASTLE",
                     answer: "castle",
                     images: {
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z" fill="none" stroke="#333" stroke-width="3"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="house-door" x="80" y="130" width="40" height="50" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window1" x="50" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window2" x="125" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window1" x="50" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window2" x="130" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z" fill="none" stroke="#333" stroke-width="3"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-front" cx="60" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-back" cx="140" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><rect id="car-window" x="70" y="80" width="60" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>'
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z"/><rect id="house-door" x="80" y="130" width="40" height="50"/><rect id="house-window1" x="50" y="100" width="25" height="25"/><rect id="house-window2" x="125" y="100" width="25" height="25"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z"/></g></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z"/><rect id="castle-window1" x="50" y="100" width="20" height="20"/><rect id="castle-window2" x="130" y="100" width="20" height="20"/></g></svg>',
+                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z"/><circle id="car-wheel-front" cx="60" cy="160" r="20"/><circle id="car-wheel-back" cx="140" cy="160" r="20"/><rect id="car-window" x="70" y="80" width="60" height="20"/></g></svg>',
+                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z"/></g></svg>'
                     }
                 },
                 {
                     question: "CAR",
                     answer: "car",
                     images: {
-                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z" fill="none" stroke="#333" stroke-width="3"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-front" cx="60" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-back" cx="140" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><rect id="car-window" x="70" y="80" width="60" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z" fill="none" stroke="#333" stroke-width="3"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="house-door" x="80" y="130" width="40" height="50" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window1" x="50" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window2" x="125" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window1" x="50" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window2" x="130" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
-                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>'
+                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z"/><circle id="car-wheel-front" cx="60" cy="160" r="20"/><circle id="car-wheel-back" cx="140" cy="160" r="20"/><rect id="car-window" x="70" y="80" width="60" height="20"/></g></svg>',
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z"/><rect id="house-door" x="80" y="130" width="40" height="50"/><rect id="house-window1" x="50" y="100" width="25" height="25"/><rect id="house-window2" x="125" y="100" width="25" height="25"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z"/></g></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z"/><rect id="castle-window1" x="50" y="100" width="20" height="20"/><rect id="castle-window2" x="130" y="100" width="20" height="20"/></g></svg>',
+                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z"/></g></svg>'
                     }
                 }
             ]
