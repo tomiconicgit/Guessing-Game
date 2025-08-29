@@ -15,7 +15,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #2c003e; /* Deep purple/blue */
+            background: radial-gradient(circle, #222222, #1a1a1a);
             color: #e0e0e0;
             margin: 0;
             padding: 0;
@@ -42,11 +42,11 @@
             width: 90%;
             max-width: 400px;
             padding: 20px;
-            background: rgba(44, 0, 62, 0.7); /* Slightly transparent dark background */
+            background: rgba(26, 26, 26, 0.8);
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            border: 2px solid #ff00ff; /* Bright border */
+            backdrop-filter: blur(5px);
+            border: 2px solid #ff00ff;
             transform: translateX(100vw);
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
@@ -61,8 +61,12 @@
 
         h1, h2 {
             font-family: 'Fredoka One', cursive;
-            color: #ff00ff; /* Bright magenta */
+            color: #ff00ff;
             animation: glow 1.5s infinite alternate;
+        }
+
+        h1 {
+            filter: blur(1px);
         }
 
         @keyframes glow {
@@ -108,19 +112,8 @@
         
         #score-display, #level-display {
             font-size: 1.4em;
-            color: #00ffff; /* Cyan */
+            color: #00ffff;
             font-weight: 600;
-        }
-
-        input, select {
-            padding: 12px;
-            border-radius: 15px;
-            border: 2px solid #00ffff;
-            background-color: #3e125c;
-            margin: 15px 0;
-            font-size: 1.1em;
-            width: 80%;
-            color: #e0e0e0;
         }
 
         .hidden {
@@ -194,6 +187,46 @@
             50% { transform: rotate(180deg) scale(1.1); background-color: #ff00ff; }
             100% { transform: rotate(360deg) scale(1); }
         }
+
+        /* Custom Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #2c003e;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #ff00ff;
+            max-width: 80%;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-buttons button {
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
@@ -231,8 +264,7 @@
                 <div id="timer-circle"></div>
                 <div id="timer-progress">15</div>
             </div>
-            <select id="lying-choice" class="option-btn"></select>
-            <button onclick="submitLie()" id="tell-btn">Tell me!</button>
+            <div id="lying-options"></div>
             <div id="thinking-area" class="hidden">
                 <div class="thinking-icon"></div>
                 <p>Thinking...</p>
@@ -243,10 +275,20 @@
         </div>
     </div>
     
+    <div id="custom-modal" class="modal">
+        <div class="modal-content">
+            <p id="modal-message"></p>
+            <div id="modal-buttons" class="modal-buttons"></div>
+        </div>
+    </div>
+
     <script>
         const appContainer = document.getElementById('app-container');
         const pages = document.querySelectorAll('.page');
         const confettiContainer = document.getElementById('confetti-container');
+        const customModal = document.getElementById('custom-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalButtons = document.getElementById('modal-buttons');
 
         let guessingLevel = 1;
         let guessingScore = 0;
@@ -285,7 +327,7 @@
         }
         function stopTicking() { if (tickingOscillator) { tickingOscillator.stop(); } }
         
-        // Game Data
+        // Game Data (same as before)
         const guessingQuestions = [
             { question: "What is the name of the K-pop group with songs like 'Kill This Love'?", options: ["Blackpink", "BTS", "Twice", "EXO"], answer: "Blackpink", level: 1 },
             { question: "In Demon Slayer, what does Tanjiro use to fight demons?", options: ["Sword", "Gun", "Magic Wand", "Book"], answer: "Sword", level: 1 },
@@ -363,6 +405,26 @@
             if (pageId === 'lying-game') { startLyingGame(); }
         }
 
+        // Custom Modal Functions
+        function showModal(message, buttons) {
+            modalMessage.innerText = message;
+            modalButtons.innerHTML = '';
+            buttons.forEach(btnInfo => {
+                const btn = document.createElement('button');
+                btn.innerText = btnInfo.text;
+                btn.onclick = () => {
+                    hideModal();
+                    if (btnInfo.callback) btnInfo.callback();
+                };
+                modalButtons.appendChild(btn);
+            });
+            customModal.classList.add('show');
+        }
+
+        function hideModal() {
+            customModal.classList.remove('show');
+        }
+
         // Guessing Game Logic
         function startGuessingGame() {
             guessingLevel = 1;
@@ -378,7 +440,7 @@
             document.getElementById('next-guessing-btn').classList.add('hidden');
             const levelQuestions = guessingQuestions.filter(q => q.level === guessingLevel);
             if (levelQuestions.length === 0) {
-                document.getElementById('question-area').innerHTML = '<p>🎉 You completed all levels!</p>';
+                showModal('🎉 You completed all levels!', [{text: 'OK', callback: () => changePage('main-menu')}]);
                 return;
             }
             const q = levelQuestions[Math.floor(Math.random() * levelQuestions.length)];
@@ -404,10 +466,11 @@
                 }
                 updateGuessingInfo();
                 showConfetti();
+                showModal('Yay Ella! Correct!', [{text: 'Awesome!'}]);
             } else {
                 playWrong();
+                showModal('Oops! Try again next time!', [{text: 'OK'}]);
             }
-            alert(isCorrect ? 'Yay Ella! Correct!' : 'Oops! Try again next time!');
             document.getElementById('next-guessing-btn').classList.remove('hidden');
             document.getElementById('guessing-options').querySelectorAll('button').forEach(btn => btn.disabled = true);
         }
@@ -425,27 +488,28 @@
         }
         function nextLyingRound() {
             stopTicking();
-            document.getElementById('tell-btn').disabled = false;
             document.getElementById('thinking-area').classList.add('hidden');
             document.getElementById('next-lying-btn').classList.add('hidden');
             document.getElementById('guess-result').innerHTML = '';
-            
+            document.getElementById('lying-options').classList.remove('hidden');
+
             const levelCategories = lyingCategories.filter(c => c.level === lyingLevel);
             if (levelCategories.length === 0) {
-                document.getElementById('lying-prompt').innerText = '🎉 You completed all levels!';
-                document.getElementById('lying-choice').classList.add('hidden');
-                document.getElementById('tell-btn').classList.add('hidden');
+                showModal('🎉 You completed all levels!', [{text: 'OK', callback: () => changePage('main-menu')}]);
+                document.getElementById('lying-prompt').classList.add('hidden');
+                document.getElementById('lying-options').classList.add('hidden');
                 return;
             }
             const cat = levelCategories[Math.floor(Math.random() * levelCategories.length)];
             document.getElementById('lying-prompt').innerText = cat.prompt;
-            const select = document.getElementById('lying-choice');
-            select.innerHTML = '';
+            const optionsDiv = document.getElementById('lying-options');
+            optionsDiv.innerHTML = '';
             cat.options.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt;
-                option.innerText = opt;
-                select.appendChild(option);
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.classList.add('option-btn');
+                btn.onclick = () => submitLie(opt);
+                optionsDiv.appendChild(btn);
             });
             startTimer(15);
         }
@@ -461,26 +525,30 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     stopTicking();
-                    alert("⏰ Time's up, Ella! Let's try again.");
-                    nextLyingRound();
+                    showModal("⏰ Time's up, Ella! Let's try again.", [{text: 'OK', callback: nextLyingRound}]);
                 }
             }, 1000);
         }
-        function submitLie() {
+        function submitLie(choice) {
             clearInterval(timerInterval);
             stopTicking();
-            document.getElementById('tell-btn').disabled = true;
+            document.getElementById('lying-options').classList.add('hidden');
             document.getElementById('thinking-area').classList.remove('hidden');
             playThinking();
-            setTimeout(() => { guessLie(); }, 3000);
+            setTimeout(() => { guessLie(choice); }, 3000);
         }
-        function guessLie() {
+        function guessLie(choice) {
             document.getElementById('thinking-area').classList.add('hidden');
-            const choice = document.getElementById('lying-choice').value;
             const isLying = Math.random() < (0.3 + (lyingLevel * 0.1)) ? 'lying' : 'telling the truth';
             const resultDiv = document.getElementById('guess-result');
             resultDiv.innerHTML = `<p>I think you're... <strong>${isLying}</strong>!</p>`;
-            const wasCorrect = confirm('Was I right? (OK for yes, Cancel for no)');
+
+            showModal('Was I right? (Did I guess correctly?)', [
+                { text: 'Yes!', callback: () => checkLyingAnswer(true) },
+                { text: 'No...', callback: () => checkLyingAnswer(false) }
+            ]);
+        }
+        function checkLyingAnswer(wasCorrect) {
             if (wasCorrect) {
                 lyingScore += 10 * lyingLevel;
                 if (lyingScore >= 30 * lyingLevel) {
@@ -489,9 +557,9 @@
                 }
                 updateLyingInfo();
                 showConfetti();
-                alert("Yay! I guessed right!");
+                showModal("Yay! I guessed right!", [{text: 'Cool!'}]);
             } else {
-                alert("Oh no! I was wrong. Better luck next time!");
+                showModal("Oh no! I was wrong. Better luck next time for me!", [{text: 'OK'}]);
             }
             document.getElementById('next-lying-btn').classList.remove('hidden');
         }
@@ -509,7 +577,6 @@
             }
             setTimeout(() => { confettiContainer.innerHTML = ''; }, 3000);
         }
-
     </script>
 </body>
 </html>
