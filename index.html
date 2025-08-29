@@ -12,7 +12,7 @@
 
         body {
             font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            background-color: #f0f0f0; /* Changed from black */
+            background-color: #e0f7fa; /* Light blue background */
             color: #333;
             margin: 0;
             padding: 20px;
@@ -28,7 +28,7 @@
             max-width: 700px;
             background-color: #fff;
             border-radius: 25px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
             padding: 40px;
             box-sizing: border-box;
             animation: fadeIn 1s ease-out;
@@ -48,16 +48,14 @@
 
         h1 {
             font-size: 3em;
-            color: #ff4500;
+            color: #ff6f61; /* Coral Red */
             margin-bottom: 15px;
-            text-shadow: none; /* Removed neon glow */
         }
 
         h2 {
             font-size: 2.2em;
-            color: #008080;
+            color: #4db6ac; /* Teal */
             margin-top: 0;
-            text-shadow: none; /* Removed neon glow */
         }
 
         p {
@@ -65,7 +63,7 @@
         }
 
         button {
-            background-color: #ff6347;
+            background-color: #ff8a65; /* Light Coral */
             color: white;
             border: none;
             padding: 15px 35px;
@@ -74,31 +72,28 @@
             border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            box-shadow: none; /* Removed neon glow */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         button:hover {
-            background-color: #e5533d;
+            background-color: #e5735b;
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         #category-buttons button {
-            background-color: #32cd32;
-            box-shadow: none; /* Removed neon glow */
+            background-color: #81c784; /* Light Green */
         }
 
         #category-buttons button:hover {
-            background-color: #28a745;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background-color: #66bb6a;
         }
 
         #question-text {
             font-size: 2em;
             font-weight: bold;
-            color: #ff4500;
+            color: #ff6f61;
             margin-bottom: 25px;
-            text-shadow: none; /* Removed neon glow */
             animation: fadeIn 1s ease-in-out;
         }
 
@@ -110,7 +105,7 @@
         }
 
         .canvas-option {
-            background-color: #f0f8ff;
+            background-color: #f5f5f5;
             border: 5px solid transparent;
             border-radius: 20px;
             cursor: pointer;
@@ -120,6 +115,7 @@
             flex-direction: column;
             align-items: center;
             animation: fadeIn 1s ease-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .canvas-option canvas {
@@ -129,12 +125,12 @@
 
         .canvas-option:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .canvas-option.correct {
-            border-color: #32cd32;
-            box-shadow: 0 0 20px #32cd32;
+            border-color: #66bb6a;
+            box-shadow: 0 0 20px #66bb6a;
             animation: pulse 0.5s ease-in-out 2;
         }
 
@@ -144,8 +140,8 @@
         }
 
         .canvas-option.wrong {
-            border-color: #ff4500;
-            box-shadow: 0 0 20px #ff4500;
+            border-color: #ff6f61;
+            box-shadow: 0 0 20px #ff6f61;
         }
 
         #coloring-area {
@@ -159,10 +155,10 @@
             width: 100%;
             max-width: 300px;
             background-color: #fff;
-            border: 3px solid #333;
+            border: 3px solid #66bb6a;
             border-radius: 10px;
             margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .color-palette {
@@ -179,7 +175,7 @@
             border-radius: 50%;
             border: 3px solid #ccc;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         }
 
         .color-swatch:hover {
@@ -212,7 +208,6 @@
             border-radius: 20px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
             text-align: center;
-            animation: none; /* Removed neon glow */
         }
 
         .modal-content h3 {
@@ -225,8 +220,18 @@
             font-size: 1.1em;
             font-weight: bold;
             text-transform: uppercase;
-            color: #ff4500;
+            color: #ff6f61;
             margin-top: 8px;
+        }
+
+        /* Fun animations for coloring screen */
+        .colorable-part {
+            animation: pulse-part 1.5s infinite;
+        }
+        @keyframes pulse-part {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -253,10 +258,10 @@
             <div id="coloring-area" style="display: none;">
                 <p>Looks great! Now color it in!</p>
                 <div class="color-palette">
-                    <div class="color-swatch active" style="background-color: #ff4500;" data-color="#ff4500"></div>
-                    <div class="color-swatch" style="background-color: #00ff00;" data-color="#00ff00"></div>
-                    <div class="color-swatch" style="background-color: #1e90ff;" data-color="#1e90ff"></div>
-                    <div class="color-swatch" style="background-color: #ffff00;" data-color="#ffff00"></div>
+                    <div class="color-swatch active" style="background-color: #ff6f61;" data-color="#ff6f61"></div>
+                    <div class="color-swatch" style="background-color: #ffd166;" data-color="#ffd166"></div>
+                    <div class="color-swatch" style="background-color: #4db6ac;" data-color="#4db6ac"></div>
+                    <div class="color-swatch" style="background-color: #7b1fa2;" data-color="#7b1fa2"></div>
                 </div>
                 <canvas id="coloring-canvas" width="300" height="300"></canvas>
             </div>
@@ -276,9 +281,9 @@
         const modalText = document.getElementById('modal-text');
         
         let currentCategory = '';
-        let currentQuestionIndex = 0;
+        let availableQuestions = [];
         let isCorrect = false;
-        let selectedColor = '#ff4500';
+        let selectedColor = '#ff6f61';
         let partsColored = new Set();
         let currentImageParts = [];
         let coloringAnimationId = null;
@@ -295,20 +300,23 @@
         }
 
         function getRandomColor() {
-            const colors = ['#ff4500', '#00ff00', '#1e90ff', '#ffff00', '#9400d3'];
+            const colors = ['#ff6f61', '#ffd166', '#4db6ac', '#7b1fa2'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
         const gameDrawings = {
             'apple': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#808080', '#A9A9A9', '#C0C0C0'].slice(0, 3).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee'].slice(0, 3).fill(colors);
                 const parts = [
-                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#808080', outline: false },
-                    { name: 'leaf', path: new Path2D(), color: defaultColors[1] || '#A9A9A9', outline: false },
-                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#C0C0C0', outline: false }
+                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'leaf', path: new Path2D(), color: defaultColors[1] || '#ddd' },
+                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#eee' }
                 ];
+                // Body
                 parts[0].path.moveTo(150, 45); parts[0].path.bezierCurveTo(225, 45, 270, 105, 270, 165); parts[0].path.bezierCurveTo(270, 225, 210, 270, 150, 270); parts[0].path.bezierCurveTo(90, 270, 30, 225, 30, 165); parts[0].path.bezierCurveTo(30, 105, 75, 45, 150, 45);
+                // Leaf
                 parts[1].path.moveTo(165, 45); parts[1].path.bezierCurveTo(180, 30, 210, 30, 225, 45); parts[1].path.bezierCurveTo(210, 60, 180, 60, 165, 45);
+                // Stem
                 parts[2].path.moveTo(143, 75); parts[2].path.bezierCurveTo(135, 45, 165, 45, 158, 75);
                 return parts;
             },
@@ -316,111 +324,131 @@
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.moveTo(150, 30); path.lineTo(270, 270); path.lineTo(30, 270); path.closePath();
-                return [{ name: 'shape', path: path, color: defaultColor || '#808080', outline: false }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#ccc' }];
             },
             'circle': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.arc(150, 150, 128, 0, 2 * Math.PI);
-                return [{ name: 'shape', path: path, color: defaultColor || '#808080', outline: false }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#ccc' }];
             },
             'square': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.rect(22, 22, 256, 256);
-                return [{ name: 'shape', path: path, color: defaultColor || '#808080', outline: false }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#ccc' }];
             },
             'star': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.moveTo(150, 30); path.lineTo(180, 110); path.lineTo(260, 110); path.lineTo(200, 160); path.lineTo(220, 240); path.lineTo(150, 200); path.lineTo(80, 240); path.lineTo(100, 160); path.lineTo(40, 110); path.lineTo(120, 110); path.closePath();
-                return [{ name: 'shape', path: path, color: defaultColor || '#808080', outline: false }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#ccc' }];
             },
             'house': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3', '#E0E0E0'].slice(0, 5).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee', '#fff', '#aaa'].slice(0, 5).fill(colors);
                 const parts = [
-                    { name: 'roof', path: new Path2D(), color: defaultColors[0] || '#808080', outline: false },
-                    { name: 'walls', path: new Path2D(), color: defaultColors[1] || '#A9A9A9', outline: false },
-                    { name: 'door', path: new Path2D(), color: defaultColors[2] || '#C0C0C0', outline: false },
-                    { name: 'window1', path: new Path2D(), color: defaultColors[3] || '#D3D3D3', outline: false },
-                    { name: 'window2', path: new Path2D(), color: defaultColors[4] || '#E0E0E0', outline: false },
+                    { name: 'roof', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'walls', path: new Path2D(), color: defaultColors[1] || '#ddd' },
+                    { name: 'door', path: new Path2D(), color: defaultColors[2] || '#eee' },
+                    { name: 'window1', path: new Path2D(), color: defaultColors[3] || '#fff' },
+                    { name: 'window2', path: new Path2D(), color: defaultColors[4] || '#aaa' },
                 ];
+                // Roof
                 parts[0].path.moveTo(150, 45); parts[0].path.lineTo(30, 135); parts[0].path.lineTo(270, 135); parts[0].path.closePath();
+                // Walls
                 parts[1].path.rect(45, 135, 210, 135);
+                // Door
                 parts[2].path.rect(120, 210, 60, 60);
+                // Window 1
                 parts[3].path.rect(75, 165, 38, 38);
+                // Window 2
                 parts[4].path.rect(188, 165, 38, 38);
                 return parts;
             },
             'castle': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3', '#E0E0E0'].slice(0, 5).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee', '#fff', '#aaa'].slice(0, 5).fill(colors);
                 const parts = [
-                    { name: 'mainWall', path: new Path2D(), color: defaultColors[0] || '#808080', outline: false },
-                    { name: 'leftTower', path: new Path2D(), color: defaultColors[1] || '#A9A9A9', outline: false },
-                    { name: 'rightTower', path: new Path2D(), color: defaultColors[2] || '#C0C0C0', outline: false },
-                    { name: 'flag', path: new Path2D(), color: defaultColors[3] || '#D3D3D3', outline: false },
-                    { name: 'door', path: new Path2D(), color: defaultColors[4] || '#E0E0E0', outline: false },
+                    { name: 'mainWall', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'leftTower', path: new Path2D(), color: defaultColors[1] || '#ddd' },
+                    { name: 'rightTower', path: new Path2D(), color: defaultColors[2] || '#eee' },
+                    { name: 'flag', path: new Path2D(), color: defaultColors[3] || '#fff' },
+                    { name: 'door', path: new Path2D(), color: defaultColors[4] || '#aaa' },
                 ];
+                // Main Wall
                 parts[0].path.rect(60, 100, 180, 180);
+                // Left Tower
                 parts[1].path.rect(30, 45, 60, 235);
+                // Right Tower
                 parts[2].path.rect(210, 45, 60, 235);
+                // Flag
                 parts[3].path.moveTo(250, 60); parts[3].path.lineTo(265, 45); parts[3].path.lineTo(280, 60); parts[3].path.lineTo(265, 75); parts[3].path.closePath();
+                // Door
                 parts[4].path.rect(130, 200, 40, 80);
                 return parts;
             },
             'car': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3', '#E0E0E0'].slice(0, 5).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee', '#fff', '#aaa'].slice(0, 5).fill(colors);
                 const parts = [
-                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#808080', outline: false },
-                    { name: 'roof', path: new Path2D(), color: defaultColors[1] || '#A9A9A9', outline: false },
-                    { name: 'frontWheel', path: new Path2D(), color: defaultColors[2] || '#C0C0C0', outline: false },
-                    { name: 'backWheel', path: new Path2D(), color: defaultColors[3] || '#D3D3D3', outline: false },
-                    { name: 'window', path: new Path2D(), color: defaultColors[4] || '#E0E0E0', outline: false },
+                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'roof', path: new Path2D(), color: defaultColors[1] || '#ddd' },
+                    { name: 'frontWheel', path: new Path2D(), color: defaultColors[2] || '#eee' },
+                    { name: 'backWheel', path: new Path2D(), color: defaultColors[3] || '#fff' },
+                    { name: 'window', path: new Path2D(), color: defaultColors[4] || '#aaa' },
                 ];
+                // Body
                 parts[0].path.moveTo(30, 180); parts[0].path.lineTo(270, 180); parts[0].path.lineTo(270, 240); parts[0].path.lineTo(30, 240); parts[0].path.closePath();
+                // Roof
                 parts[1].path.moveTo(75, 180); parts[1].path.lineTo(135, 120); parts[1].path.lineTo(225, 120); parts[1].path.lineTo(240, 180); parts[1].path.closePath();
+                // Wheels
                 parts[2].path.arc(90, 240, 30, 0, 2 * Math.PI);
                 parts[3].path.arc(210, 240, 30, 0, 2 * Math.PI);
+                // Window
                 parts[4].path.rect(90, 130, 100, 30);
                 return parts;
             },
             'tree': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#808080', '#A9A9A9'].slice(0, 2).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd'].slice(0, 2).fill(colors);
                 const parts = [
-                    { name: 'trunk', path: new Path2D(), color: defaultColors[0] || '#808080', outline: false },
-                    { name: 'leaves', path: new Path2D(), color: defaultColors[1] || '#A9A9A9', outline: false }
+                    { name: 'trunk', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'leaves', path: new Path2D(), color: defaultColors[1] || '#ddd' }
                 ];
+                // Trunk
                 parts[0].path.rect(125, 180, 50, 90);
+                // Leaves
                 parts[1].path.arc(150, 150, 120, 0, 2 * Math.PI);
+                return parts;
+            },
+            'robot': (ctx, colors) => {
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee'].slice(0, 3).fill(colors);
+                const parts = [
+                    { name: 'head', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'body', path: new Path2D(), color: defaultColors[1] || '#ddd' },
+                    { name: 'antenna', path: new Path2D(), color: defaultColors[2] || '#eee' }
+                ];
+                parts[0].path.rect(100, 50, 100, 70);
+                parts[1].path.rect(80, 120, 140, 120);
+                parts[2].path.moveTo(150, 50); parts[2].path.lineTo(150, 30); parts[2].path.arc(150, 30, 10, 0, 2 * Math.PI);
+                return parts;
+            },
+            'flower': (ctx, colors) => {
+                const defaultColors = Array.isArray(colors) ? colors : ['#ccc', '#ddd', '#eee'].slice(0, 3).fill(colors);
+                const parts = [
+                    { name: 'petals', path: new Path2D(), color: defaultColors[0] || '#ccc' },
+                    { name: 'center', path: new Path2D(), color: defaultColors[1] || '#ddd' },
+                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#eee' }
+                ];
+                parts[0].path.arc(150, 150, 120, 0, 2 * Math.PI);
+                parts[1].path.arc(150, 150, 50, 0, 2 * Math.PI);
+                parts[2].path.rect(140, 270, 20, 30);
                 return parts;
             }
         };
 
+        const allImages = Object.keys(gameDrawings);
+
         const gameData = {
-            shapes: [
-                {
-                    question: "APPLE",
-                    answer: "apple",
-                    images: ['apple', 'triangle', 'circle', 'square']
-                },
-                {
-                    question: "TRIANGLE",
-                    answer: "triangle",
-                    images: ['circle', 'square', 'triangle', 'star']
-                }
-            ],
-            buildings_cars: [
-                {
-                    question: "CASTLE",
-                    answer: "castle",
-                    images: ['house', 'castle', 'car', 'tree']
-                },
-                {
-                    question: "CAR",
-                    answer: "car",
-                    images: ['car', 'house', 'castle', 'tree']
-                }
-            ]
+            shapes: allImages.filter(img => ['apple', 'triangle', 'circle', 'square', 'star', 'robot', 'flower'].includes(img)),
+            buildings_cars: allImages.filter(img => ['house', 'castle', 'car', 'tree'].includes(img))
         };
 
         function changePage(id) {
@@ -444,30 +472,33 @@
 
         function selectCategory(category) {
             currentCategory = category;
-            currentQuestionIndex = 0;
+            availableQuestions = [...gameData[currentCategory]];
             document.getElementById('game-title').innerText = `Category: ${category.charAt(0).toUpperCase() + category.slice(1).replace('_', ' & ')}`;
             changePage('game-page');
             loadQuestion();
         }
 
         function loadQuestion() {
-            if (currentQuestionIndex >= gameData[currentCategory].length) {
-                showModal("You finished the game! Great job! 🎉", 3000);
-                setTimeout(() => changePage('menu'), 3000);
-                return;
+            if (availableQuestions.length === 0) {
+                // Refill the pool to make the game "endless"
+                availableQuestions = [...gameData[currentCategory]];
+                showModal("You've seen them all! Let's shuffle and play again!", 2000);
             }
 
-            const questionData = gameData[currentCategory][currentQuestionIndex];
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const correctImageName = availableQuestions[randomIndex];
             
+            // Remove the selected question from the available pool
+            availableQuestions.splice(randomIndex, 1);
+
             const randomCorrectColor = getRandomColor();
-            const correctImageName = questionData.answer;
             const correctLabel = `${randomColorName(randomCorrectColor).toUpperCase()} ${correctImageName.toUpperCase()}`;
             document.getElementById('question-text').innerText = correctLabel;
 
             const grid = document.getElementById('image-grid');
             grid.innerHTML = '';
             
-            const shuffledImages = questionData.images.sort(() => Math.random() - 0.5);
+            const shuffledImages = getShuffledImages(correctImageName);
             
             shuffledImages.forEach(imageName => {
                 const div = document.createElement('div');
@@ -486,11 +517,6 @@
                 parts.forEach(part => {
                     ctx.fillStyle = part.color;
                     ctx.fill(part.path);
-                    if (part.outline) {
-                        ctx.strokeStyle = '#000';
-                        ctx.lineWidth = 10;
-                        ctx.stroke(part.path);
-                    }
                 });
 
                 const label = document.createElement('span');
@@ -508,13 +534,21 @@
             isCorrect = false;
         }
 
+        function getShuffledImages(correctImage) {
+            const allImages = gameData[currentCategory];
+            const otherImages = allImages.filter(img => img !== correctImage);
+            const shuffledOthers = otherImages.sort(() => Math.random() - 0.5);
+            
+            const choices = [correctImage, ...shuffledOthers.slice(0, 3)];
+            return choices.sort(() => Math.random() - 0.5);
+        }
+
         function randomColorName(hex) {
             const colorMap = {
-                '#ff4500': 'RED',
-                '#00ff00': 'GREEN',
-                '#1e90ff': 'BLUE',
-                '#ffff00': 'YELLOW',
-                '#9400d3': 'PURPLE'
+                '#ff6f61': 'ORANGE',
+                '#ffd166': 'YELLOW',
+                '#4db6ac': 'BLUE',
+                '#7b1fa2': 'PURPLE'
             };
             return colorMap[hex] || 'UNKNOWN';
         }
@@ -535,12 +569,15 @@
                 const ctx = coloringCanvas.getContext('2d');
                 ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
 
-                const shades = ['#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3', '#E0E0E0']; 
+                const shades = ['#ccc', '#ddd', '#eee', '#fff', '#aaa']; 
                 currentImageParts = gameDrawings[correct](ctx, shades);
                 
                 currentImageParts.forEach(part => {
                     ctx.fillStyle = part.color;
                     ctx.fill(part.path);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 2;
+                    ctx.stroke(part.path);
                 });
 
                 if (coloringAnimationId) {
@@ -562,6 +599,7 @@
                 };
 
                 partsColored = new Set();
+                animateColorableParts(ctx);
             } else {
                 element.classList.add('wrong');
                 showModal("Oops! Try again!", 1000);
@@ -582,6 +620,9 @@
                 currentImageParts.forEach(p => {
                     ctx.fillStyle = p.color;
                     ctx.fill(p.path);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 2;
+                    ctx.stroke(p.path);
                 });
             }
 
@@ -612,8 +653,38 @@
             coloringAnimationId = requestAnimationFrame(animate);
         }
 
+        let animationFrameId = null;
+        function animateColorableParts(ctx) {
+            function animate(timestamp) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                const time = timestamp * 0.001;
+                currentImageParts.forEach(part => {
+                    ctx.fillStyle = part.color;
+                    ctx.fill(part.path);
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 2;
+                    ctx.stroke(part.path);
+
+                    if (!partsColored.has(part.name)) {
+                        const scale = 1 + Math.sin(time * 4) * 0.03;
+                        ctx.save();
+                        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+                        ctx.scale(scale, scale);
+                        ctx.translate(-ctx.canvas.width / 2, -ctx.canvas.height / 2);
+                        ctx.fillStyle = `rgba(255, 255, 255, 0.4)`;
+                        ctx.fill(part.path);
+                        ctx.restore();
+                    }
+                });
+                animationFrameId = requestAnimationFrame(animate);
+            }
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
         function nextQuestion() {
-            currentQuestionIndex++;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
             loadQuestion();
         }
         
