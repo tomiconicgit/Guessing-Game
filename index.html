@@ -3,312 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Ella's Fun Game">
-    <meta name="description" content="A fun game for Ella!">
-    <meta name="theme-color" content="#1a1a2e">
-    <title>Ella's Fun Game!</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Interactive Game</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle, #2c2f45, #1a1a2e); /* Muted, clean gradient */
-            color: #e6e6fa; /* Light text color */
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff; /* A soft, light blue */
+            color: #333;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            overflow: hidden;
-            position: relative;
         }
 
-        #app-container {
+        #game-container {
             width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            max-width: 600px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            box-sizing: border-box;
             position: relative;
         }
 
         .page {
-            position: absolute;
-            width: 90%;
-            max-width: 500px; /* Reduced max-width for cleaner UI */
-            padding: 30px;
-            background: #2c2f45; /* Dark background for container */
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-            border: none; /* Removed neon border */
-            transform: translateX(100vw);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
         }
-
+        
         .page.active {
-            transform: translateX(0);
+            display: flex;
         }
 
-        .page.exit {
-            transform: translateX(-100vw);
+        h1 {
+            font-size: 2.5em;
+            color: #4b0082; /* Deep purple */
+            margin-bottom: 10px;
         }
-
-        h1, h2 {
-            font-family: 'Fredoka One', cursive;
-            color: #c4def6; /* Soft blue for titles */
-            text-shadow: none; /* Removed the glow/blur effect */
+        
+        h2 {
+            font-size: 2em;
+            color: #008080; /* Teal */
+            margin-top: 0;
         }
         
         p {
-            font-size: 1.1em;
-            color: #e6e6fa;
+            font-size: 1.2em;
         }
 
         button {
-            background: linear-gradient(135deg, #6a85b6, #bac8e0); /* Clean gradient on buttons */
+            background-color: #ff6347; /* Tomato red */
+            color: white;
             border: none;
-            border-radius: 50px;
             padding: 15px 30px;
             margin: 10px;
             font-size: 1.2em;
+            border-radius: 10px;
             cursor: pointer;
-            color: #1a1a2e; /* Dark text on light buttons */
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transition: background-color 0.3s;
         }
 
         button:hover {
-            background: linear-gradient(135deg, #bac8e0, #6a85b6);
-            transform: scale(1.05); /* Gentle scale up */
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        button:active {
-            transform: scale(0.95);
+            background-color: #e5533d;
         }
 
-        .option-btn {
-            display: block;
-            width: 80%;
+        #category-buttons button {
+            background-color: #20b2aa; /* Light sea green */
+        }
+        
+        #category-buttons button:hover {
+            background-color: #1a9690;
+        }
+
+        #question-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4b0082;
+            margin-bottom: 20px;
+        }
+
+        #image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-option {
+            background-color: #e6f3ff;
+            border: 4px solid transparent;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-option.correct {
+            border-color: #28a745; /* Green */
+        }
+        
+        .image-option.wrong {
+            border-color: #dc3545; /* Red */
+        }
+
+        #coloring-area {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .svg-container {
+            width: 100%;
             max-width: 300px;
-            margin: 15px auto;
+            margin-bottom: 20px;
         }
         
-        #score-display, #level-display {
-            font-size: 1.4em;
-            color: #e09f71; /* A warm orange for score to stand out */
-            font-weight: 600;
-        }
-
-        .hidden {
-            display: none;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #e09f71; /* Orange */
-            animation: confetti-fall 3s linear infinite;
-        }
-
-        @keyframes confetti-fall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-        
-        #confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .svg-container svg {
             width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        #timer-container {
-            width: 100px;
-            height: 100px;
-            position: relative;
-            margin: 20px auto;
-        }
-
-        #timer-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 5px solid #c4def6; /* Soft blue circle */
-            box-shadow: 0 0 10px #c4def6;
-            animation: none; /* Removed pulse animation */
+            height: auto;
         }
         
-        #timer-progress {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Fredoka One', cursive;
-            font-size: 2em;
-            color: #e09f71; /* Orange timer text */
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-
-        .thinking-icon {
-            width: 80px;
-            height: 80px;
-            margin: 20px auto;
+        
+        .color-swatch {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #6a85b6, #e09f71); /* Gradient for the icon */
-            animation: spin-pulse 2s infinite;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .color-swatch.active {
+            transform: scale(1.2);
+            border-color: #333;
         }
 
-        @keyframes spin-pulse {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
-        }
-
-        /* Custom Modal */
+        /* Modal Styles */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
             justify-content: center;
             align-items: center;
-            z-index: 20;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal.show {
-            opacity: 1;
-            visibility: visible;
+            z-index: 1000;
         }
 
         .modal-content {
-            background: #2c2f45; /* Modal background matches main container */
+            background-color: #fff;
             padding: 30px;
-            border-radius: 20px;
-            border: 2px solid #c4def6; /* Soft border */
-            max-width: 80%;
-            transform: scale(0.8);
-            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        .modal.show .modal-content {
-            transform: scale(1);
-        }
-
-        #modal-message {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.5em;
-            color: #c4def6;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
         
-        #modal-sub-message {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-top: -10px;
-            margin-bottom: 20px;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .modal-buttons button {
-            width: auto;
-            min-width: 150px;
-            margin: 5px;
+        .modal-content h3 {
+            margin: 0 0 10px;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <div id="confetti-container"></div>
-    <div id="app-container">
-        <div id="main-menu" class="page active">
-            <h1>Welcome, Ella! 🎉</h1>
-            <p>Ready for a super fun game?</p>
-            <button onclick="changePage('guessing-game')">Guessing Game</button>
-            <button onclick="changePage('lying-game')">Lying Game</button>
+
+    <div id="game-container">
+        <div id="menu" class="page active">
+            <h1>Interactive Game</h1>
+            <p>Ready to have some fun?</p>
+            <button onclick="startGame()">Start Playing</button>
         </div>
 
-        <div id="guessing-game" class="page">
-            <h2>Guessing Game 🧐</h2>
-            <div id="game-info">
-                <p id="guessing-level">Level: 1</p>
-                <p id="guessing-score">Score: 0</p>
+        <div id="categories" class="page">
+            <h2>Choose a Category</h2>
+            <div id="category-buttons">
+                <button onclick="selectCategory('animals')">Animals</button>
+                <button onclick="selectCategory('colors')">Colors</button>
+                <button onclick="selectCategory('buildings')">Buildings</button>
             </div>
-            <div id="question-area">
-                <p id="guessing-question"></p>
-                <div id="guessing-options"></div>
-            </div>
-            <button onclick="nextGuessingQuestion()" id="next-guessing-btn" class="hidden option-btn">Next Question</button>
-            <button onclick="changePage('main-menu')">Back to Menu</button>
         </div>
 
-        <div id="lying-game" class="page">
-            <h2>Lying Game 😈</h2>
-            <div id="game-info">
-                <p id="lying-level">Level: 1</p>
-                <p id="lying-score">Score: 0</p>
+        <div id="game-page" class="page">
+            <h2 id="game-title"></h2>
+            <p id="question-text"></p>
+            <div id="image-grid"></div>
+            <div id="coloring-area" style="display: none;">
+                <p>Looks great! Now pick a color to decorate!</p>
+                <div class="color-palette">
+                    <div class="color-swatch" style="background-color: #ff6347;" data-color="#ff6347"></div>
+                    <div class="color-swatch" style="background-color: #20b2aa;" data-color="#20b2aa"></div>
+                    <div class="color-swatch" style="background-color: #8a2be2;" data-color="#8a2be2"></div>
+                </div>
+                <div id="svg-container" class="svg-container"></div>
+                <button onclick="nextQuestion()">Looks great! Next Question!</button>
             </div>
-            <p id="lying-prompt"></p>
-            <div id="timer-container">
-                <div id="timer-circle"></div>
-                <div id="timer-progress">15</div>
-            </div>
-            <div id="lying-options"></div>
-            <div id="thinking-area" class="hidden">
-                <div class="thinking-icon"></div>
-                <p>Thinking...</p>
-            </div>
-            <div id="guess-result"></div>
-            <button onclick="nextLyingRound()" id="next-lying-btn" class="hidden option-btn">Next Round</button>
-            <button onclick="changePage('main-menu')">Back to Menu</button>
         </div>
     </div>
-    
-    <div id="custom-modal" class="modal">
+
+    <div id="myModal" class="modal">
         <div class="modal-content">
-            <p id="modal-message"></p>
-            <p id="modal-sub-message"></p>
-            <div id="modal-buttons" class="modal-buttons"></div>
+            <h3 id="modal-text"></h3>
+            <button onclick="closeModal()">OK</button>
         </div>
     </div>
 
     <script>
-        const appContainer = document.getElementById('app-container');
+        // --- Game Logic ---
         const pages = document.querySelectorAll('.page');
-        const confettiContainer = document.getElementById('confetti-container');
-        const customModal = document.getElementById('custom-modal');
-        const modalMessage = document.getElementById('modal-message');
-        const modalSubMessage = document.getElementById('modal-sub-message');
-        const modalButtons = document.getElementById('modal-buttons');
+        const modal = document.getElementById('myModal');
+        const modalText = document.getElementById('modal-text');
+        
+        let currentCategory = '';
+        let currentQuestionIndex = 0;
+        let isCorrect = false;
+        let selectedColor = '#ff6347'; // Default color
 
-        let guessingLevel = 1;
-        let guessingScore = 0;
-        let lyingLevel = 1;
-        let lyingScore = 0;
-        let timerInterval;
+        // Game Data (Images represented by SVG paths)
+        const gameData = {
+            animals: [
+                {
+                    question: "Which one is a dinosaur?",
+                    answer: "dinosaur",
+                    images: {
+                        dinosaur: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#90ee90" d="M 100 10 C 120 20 130 50 120 70 L 110 80 C 130 90 150 100 170 110 L 190 120 C 180 140 160 150 140 140 L 120 130 C 100 140 80 150 60 160 L 40 170 C 20 160 10 140 20 120 L 30 110 C 20 90 10 70 20 50 L 30 40 C 50 30 70 20 100 10 Z" /></path></svg>',
+                        elephant: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#a9a9a9" d="M 100 10 C 140 20 150 50 140 70 L 130 80 C 150 90 170 100 190 110 L 170 130 C 150 140 130 150 110 160 L 90 170 C 70 160 50 150 30 140 L 20 120 C 10 100 0 80 10 60 L 20 40 C 40 30 70 20 100 10 Z" /></path></svg>',
+                        lion: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#daa520" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>',
+                        cat: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#b0c4de" d="M 100 10 C 110 20 120 40 110 60 L 100 70 C 110 80 120 90 130 100 L 140 110 C 130 120 120 130 110 120 L 100 110 C 90 120 80 130 70 140 L 60 150 C 50 140 40 120 50 100 L 60 90 C 50 70 40 50 50 30 L 60 20 C 80 10 90 0 100 10 Z" /></path></svg>'
+                    }
+                },
+                {
+                    question: "Which one is a lion?",
+                    answer: "lion",
+                    images: {
+                        dog: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#cd853f" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>',
+                        lion: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#daa520" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>',
+                        zebra: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /><path d="M 100 10 L 100 160 L 120 170 L 120 10 Z" fill="#000" /></path></svg>',
+                        penguin: '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#000" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /><path fill="#fff" d="M 100 30 C 120 40 130 60 120 80 L 110 90 C 120 100 130 110 140 120 L 150 130 C 140 140 130 150 120 140 L 110 130 C 100 140 90 150 80 160 L 70 170 C 60 160 50 140 60 120 L 70 110 C 60 90 50 70 60 50 L 70 40 C 90 30 100 20 100 30 Z" /></path></svg>'
+                    }
+                }
+            ],
+            // More questions for animals, shapes, buildings...
+            // Add at least 10 questions per category
+            colors: [
+                {
+                    question: "Pick the blue apple!",
+                    answer: "blue-apple",
+                    images: {
+                        'red-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#ff0000" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>',
+                        'green-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#008000" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>',
+                        'blue-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#0000ff" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>',
+                        'purple-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#800080" d="M 100 10 C 120 20 130 40 120 60 L 110 70 C 130 80 150 90 170 100 L 190 110 C 180 130 160 140 140 130 L 120 120 C 100 130 80 140 60 150 L 40 160 C 20 150 10 130 20 110 L 30 100 C 20 80 10 60 20 40 L 30 30 C 50 20 70 10 100 10 Z" /></path></svg>'
+                    }
+                }
+            ],
+            buildings: [
+                {
+                    question: "Which one is a castle?",
+                    answer: "castle",
+                    images: {
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#f4a460" d="M 10 100 L 100 20 L 190 100 L 190 180 L 10 180 Z" /><rect x="75" y="120" width="50" height="60" fill="#a0522d" /></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#a0a0a0" d="M 10 100 L 10 180 L 190 180 L 190 100 L 170 100 L 170 120 L 150 120 L 150 100 L 130 100 L 130 120 L 110 120 L 110 100 L 90 100 L 90 120 L 70 120 L 70 100 L 50 100 L 50 120 L 30 120 L 30 100 L 10 100 Z" /><path fill="#a0a0a0" d="M 100 20 L 100 100 L 120 100 L 120 20 Z" /><path fill="#808080" d="M 100 20 L 110 10 L 120 20 Z" /></svg>',
+                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#0000ff" d="M 20 150 L 180 150 L 180 180 L 20 180 Z" /><path fill="#0000ff" d="M 50 150 L 50 100 L 150 100 L 150 150 Z" /><circle cx="50" cy="180" r="15" fill="#000" /><circle cx="150" cy="180" r="15" fill="#000" /></svg>',
+                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#8b4513" d="M 90 100 L 110 100 L 110 180 L 90 180 Z" /><path fill="#008000" d="M 100 20 C 130 10 170 40 150 70 C 180 90 160 120 130 130 C 100 150 70 130 50 120 C 30 100 10 80 20 60 C 40 30 70 10 100 20 Z" /></svg>'
+                    }
+                }
+            ]
+        };
+
+        // UI Functions
+        function changePage(id) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
+        }
+        
+        function startGame() {
+            changePage('categories');
+        }
+
+        function showModal(text) {
+            modalText.innerText = text;
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Game Logic
+        function selectCategory(category) {
+            currentCategory = category;
+            currentQuestionIndex = 0;
+            document.getElementById('game-title').innerText = `Category: ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+            changePage('game-page');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= 10) { // End of game after 10 questions
+                showModal("You finished the game! Great job!");
+                setTimeout(() => changePage('menu'), 2000);
+                return;
+            }
+
+            const questionData = gameData[currentCategory][currentQuestionIndex % gameData[currentCategory].length];
+            document.getElementById('question-text').innerText = questionData.question;
+            const grid = document.getElementById('image-grid');
+            grid.innerHTML = '';
+            
+            // Randomize image order
+            const imageKeys = Object.keys(questionData.images).sort(() => Math.random() - 0.5);
+
+            imageKeys.forEach(key => {
+                const div = document.createElement('div');
+                div.classList.add('image-option');
+                div.dataset.answer = key;
+                div.innerHTML = questionData.images[key];
+                div.onclick = () => checkAnswer(key, questionData.answer, div);
+                grid.appendChild(div);
+            });
+
+            document.getElementById('image-grid').style.display = 'grid';
+            document.getElementById('coloring-area').style.display = 'none';
+        }
+
+        function checkAnswer(selected, correct, element) {
+            if (isCorrect) return; // Prevent multiple clicks after correct answer
+
+            if (selected === correct) {
+                isCorrect = true;
+                element.classList.add('correct');
+                showModal(`Correct! You found the ${correct}! 🎉`);
+                playSound(800, 0.1);
+                
+                // Show coloring activity
+                document.getElementById('image-grid').style.display = 'none';
+                document.getElementById('coloring-area').style.display = 'flex';
+                
+                const svgContainer = document.getElementById('svg-container');
+                svgContainer.innerHTML = element.querySelector('svg').outerHTML;
+                
+                // Make SVG parts clickable for coloring
+                const svg = svgContainer.querySelector('svg');
+                svg.querySelectorAll('path, rect, circle').forEach(part => {
+                    part.onclick = () => colorSvgPart(part);
+                });
+
+            } else {
+                element.classList.add('wrong');
+                showModal("Oops! Try again!");
+                playSound(200, 0.3, 'sawtooth');
+            }
+        }
+        
+        function colorSvgPart(part) {
+            part.setAttribute('fill', selectedColor);
+        }
+
+        function nextQuestion() {
+            isCorrect = false;
+            currentQuestionIndex++;
+            showModal("Looks great! Moving on...");
+            setTimeout(() => {
+                closeModal();
+                loadQuestion();
+            }, 1000);
+        }
+        
+        // Color palette logic
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.onclick = () => {
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+                selectedColor = swatch.dataset.color;
+            };
+        });
+
+        // Sound Functions (from previous code, simplified for this game)
         let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        let tickingOscillator;
-
-        // Sound Functions
         function playSound(frequency, duration, type = 'sine', volume = 0.5) {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -320,275 +413,13 @@
             oscillator.start();
             setTimeout(() => { oscillator.stop(); }, duration * 1000);
         }
-        function playCorrect() { playSound(800, 0.1); setTimeout(() => playSound(1200, 0.1), 100); setTimeout(() => playSound(1600, 0.2), 200); }
-        function playWrong() { playSound(200, 0.3, 'sawtooth'); }
-        function playLevelUp() { for (let i = 0; i < 5; i++) { setTimeout(() => playSound(400 + i * 200, 0.1), i * 100); } }
-        function playThinking() { playSound(300, 0.2, 'triangle'); setTimeout(() => playSound(300, 0.2, 'triangle'), 500); setTimeout(() => playSound(300, 0.2, 'triangle'), 1000); }
-        function startTicking() {
-            tickingOscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            tickingOscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            tickingOscillator.frequency.value = 1000;
-            tickingOscillator.type = 'square';
-            gainNode.gain.value = 0.1;
-            tickingOscillator.start();
-            setInterval(() => { gainNode.gain.value = 0.1; setTimeout(() => gainNode.gain.value = 0, 50); }, 1000);
-        }
-        function stopTicking() { if (tickingOscillator) { tickingOscillator.stop(); } }
         
-        // Game Data (same as before)
-        const guessingQuestions = [
-            { question: "What is the name of the K-pop group with songs like 'Kill This Love'?", options: ["Blackpink", "BTS", "Twice", "EXO"], answer: "Blackpink", level: 1 },
-            { question: "In Demon Slayer, what does Tanjiro use to fight demons?", options: ["Sword", "Gun", "Magic Wand", "Book"], answer: "Sword", level: 1 },
-            { question: "Finish the song: 'Baby shark, doo doo doo doo doo doo...'", options: ["Baby shark", "Mommy shark", "Daddy shark", "Grandma shark"], answer: "Baby shark", level: 1 },
-            { question: "What is a popular trend on TikTok? Dancing to...", options: ["Music", "Books", "Math problems", "Cooking"], answer: "Music", level: 1 },
-            { question: "Who sings 'Shake It Off'?", options: ["Taylor Swift", "Ariana Grande", "Billie Eilish", "Katy Perry"], answer: "Taylor Swift", level: 1 },
-            { question: "In Frozen, who has ice powers?", options: ["Elsa", "Anna", "Olaf", "Kristoff"], answer: "Elsa", level: 1 },
-            { question: "What is a Squishmallow?", options: ["A soft toy", "A game", "A song", "A food"], answer: "A soft toy", level: 1 },
-            { question: "Which K-pop idol is known as the 'Golden Maknae' in BTS?", options: ["Jungkook", "V", "Jimin", "Suga"], answer: "Jungkook", level: 2 },
-            { question: "In Demon Slayer, who is Tanjiro's sister?", options: ["Nezuko", "Zenitsu", "Inosuke", "Giyu"], answer: "Nezuko", level: 2 },
-            { question: "Finish the lyric: 'We don't talk anymore, like we used to...'", options: ["Do", "Go", "See", "Eat"], answer: "Do", level: 2 },
-            { question: "What is a current trend? Wearing oversized...?", options: ["Hoodies", "Shoes", "Hats", "Glasses"], answer: "Hoodies", level: 2 },
-            { question: "What movie has Elsa and Anna?", options: ["Frozen", "Moana", "Tangled", "Cinderella"], answer: "Frozen", level: 2 },
-            { question: "In Moana, what does Moana love?", options: ["The ocean", "The mountains", "The desert", "The city"], answer: "The ocean", level: 2 },
-            { question: "What is a popular YouTube channel for kids like Cocomelon good for?", options: ["Nursery rhymes", "Math lessons", "Cooking", "Sports"], answer: "Nursery rhymes", level: 2 },
-            { question: "Which Blackpink member released 'Solo'?", options: ["Jennie", "Lisa", "Rosé", "Jisoo"], answer: "Jennie", level: 3 },
-            { question: "In Demon Slayer, what is the name of the demon king?", options: ["Muzan", "Akaza", "Doma", "Kokushibo"], answer: "Muzan", level: 3 },
-            { question: "Who sings 'Bad Guy'?", options: ["Billie Eilish", "Olivia Rodrigo", "Doja Cat", "Megan Thee Stallion"], answer: "Billie Eilish", level: 3 },
-            { question: "What is a viral challenge? The ... dance.", options: ["Renegade", "Running", "Jumping", "Eating"], answer: "Renegade", level: 3 },
-            { question: "Finish: 'I'm a Barbie girl, in a Barbie...'", options: ["World", "House", "Car", "Dream"], answer: "World", level: 3 },
-            { question: "In Snow White (2025), who plays Snow White?", options: ["Rachel Zegler", "Gal Gadot", "Emma Watson", "Ariana Grande"], answer: "Rachel Zegler", level: 3 },
-            { question: "What trend involves making friendship bracelets?", options: ["Taylor Swift inspired", "Sports", "Cooking", "Reading"], answer: "Taylor Swift inspired", level: 3 },
-            { question: "Popular YouTube content for girls: Making...?", options: ["Slime", "Cars", "Trucks", "Tools"], answer: "Slime", level: 3 },
-            { question: "Which K-pop group sang 'Dynamite'?", options: ["BTS", "Blackpink", "EXO", "Twice"], answer: "BTS", level: 4 },
-            { question: "In Demon Slayer, what breathing style does Zenitsu use?", options: ["Thunder", "Water", "Flame", "Wind"], answer: "Thunder", level: 4 },
-            { question: "Who sings 'Drivers License'?", options: ["Olivia Rodrigo", "Taylor Swift", "Ariana Grande", "Billie Eilish"], answer: "Olivia Rodrigo", level: 4 },
-            { question: "What trend involves stacking items creatively?", options: ["Squishmallow collecting", "Book stacking", "Food stacking", "Toy stacking"], answer: "Squishmallow collecting", level: 4 },
-            { question: "Finish the lyric: 'Shape of you, just as nature...'", options: ["Intended", "Made", "Created", "Built"], answer: "Intended", level: 4 },
-            { question: "In Zootopia 2 (2025), who returns as Judy Hopps?", options: ["Ginnifer Goodwin", "Idina Menzel", "Kristen Bell", "Auli'i Cravalho"], answer: "Ginnifer Goodwin", level: 4 },
-            { question: "A 2025 K-pop trend: More ... songs.", options: ["EDM/hyper-pop", "Classical", "Jazz", "Country"], answer: "EDM/hyper-pop", level: 4 },
-            { question: "Popular YouTube for kids: Blippi teaches about...?", options: ["Colors and vehicles", "Advanced math", "History", "Politics"], answer: "Colors and vehicles", level: 4 },
-            { question: "Which Twice member is from Taiwan?", options: ["Tzuyu", "Nayeon", "Jihyo", "Mina"], answer: "Tzuyu", level: 5 },
-            { question: "In Demon Slayer, who is the Hashira of Water?", options: ["Giyu Tomioka", "Shinobu Kocho", "Kyojuro Rengoku", "Tengen Uzui"], answer: "Giyu Tomioka", level: 5 },
-            { question: "Who sings 'Levitating'?", options: ["Dua Lipa", "Doja Cat", "Cardi B", "Megan Thee Stallion"], answer: "Dua Lipa", level: 5 },
-            { question: "What is a popular ASMR trend?", options: ["Whispering", "Shouting", "Running", "Jumping"], answer: "Whispering", level: 5 },
-            { question: "Finish: 'Old town road, I'm gonna take my horse...'", options: ["To the old town road", "To the city", "To the farm", "To the store"], answer: "To the old town road", level: 5 },
-            { question: "In Lilo & Stitch (2025), what is Stitch?", options: ["An alien", "A dog", "A cat", "A robot"], answer: "An alien", level: 5 },
-            { question: "2025 K-pop hit by SEVENTEEN?", options: ["THUNDER", "Dynamite", "Butter", "Pink Venom"], answer: "THUNDER", level: 5 },
-            { question: "YouTube channel for educational fun: National Geographic Kids features...?", options: ["Animals and science", "Cartoons only", "Music videos", "Gaming"], answer: "Animals and science", level: 5 },
-            { question: "Trend for 2025: DIY ... kits.", options: ["Fashion and building", "Car repair", "Home building", "Farming"], answer: "Fashion and building", level: 5 }
-        ];
+        // Initial state
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.color-swatch')[0].classList.add('active');
+        });
 
-        const lyingCategories = [
-            { level: 1, prompt: "Pick your favorite color, but you can lie!", options: ["Pink", "Blue", "Green", "Yellow"] },
-            { level: 1, prompt: "Pick your favorite animal, but you can lie!", options: ["Unicorn", "Dog", "Cat", "Bird"] },
-            { level: 1, prompt: "Pick your favorite Disney princess, but you can lie!", options: ["Elsa", "Moana", "Belle", "Ariel"] },
-            { level: 2, prompt: "Pick your favorite food, but you can lie!", options: ["Ice Cream", "Pizza", "Candy", "Fruit"] },
-            { level: 2, prompt: "Pick your favorite song, but you can lie!", options: ["Baby Shark", "Shake It Off", "Bad Guy", "Dynamite"] },
-            { level: 2, prompt: "Pick your favorite YouTube channel, but you can lie!", options: ["Cocomelon", "Blippi", "Peppa Pig", "Ryan's World"] },
-            { level: 3, prompt: "Pick your favorite K-pop group, but you can lie!", options: ["Blackpink", "BTS", "Twice", "Stray Kids"] },
-            { level: 3, prompt: "Pick your favorite trend, but you can lie!", options: ["TikTok Dance", "ASMR", "Squishmallows", "Friendship Bracelets"] },
-            { level: 3, prompt: "Pick your favorite Disney movie, but you can lie!", options: ["Frozen", "Moana", "Snow White", "Zootopia"] },
-            { level: 4, prompt: "Pick your favorite movie, but you can lie!", options: ["Frozen", "Moana", "Barbie", "Demon Slayer Movie"] },
-            { level: 4, prompt: "Pick your favorite character, but you can lie!", options: ["Elsa", "Tanjiro", "Barbie", "Nezuko"] },
-            { level: 4, prompt: "Pick your favorite 2025 trend, but you can lie!", options: ["Slime Making", "Minecraft", "K-pop EDM", "DIY Fashion"] },
-            { level: 5, prompt: "Pick your favorite hobby, but you can lie!", options: ["Dancing to K-pop", "Watching Demon Slayer", "Collecting Squishmallows", "Making Slime"] },
-            { level: 5, prompt: "Pick your dream pet, but you can lie!", options: ["Dragon", "Pegasus", "Phoenix", "Mermaid"] },
-            { level: 5, prompt: "Pick your favorite YouTube content, but you can lie!", options: ["Educational Videos", "Toy Reviews", "Challenges", "Music Covers"] }
-        ];
-
-        // Page Navigation
-        function changePage(pageId) {
-            clearInterval(timerInterval);
-            stopTicking();
-            pages.forEach(page => {
-                if (page.id === pageId) {
-                    page.classList.remove('exit');
-                    page.classList.add('active');
-                } else {
-                    page.classList.add('exit');
-                    page.classList.remove('active');
-                }
-            });
-            if (pageId === 'guessing-game') { startGuessingGame(); }
-            if (pageId === 'lying-game') { startLyingGame(); }
-        }
-
-        // Custom Modal Functions
-        function showModal(message, subMessage = '', buttons) {
-            modalMessage.innerText = message;
-            modalSubMessage.innerText = subMessage;
-            modalButtons.innerHTML = '';
-            buttons.forEach(btnInfo => {
-                const btn = document.createElement('button');
-                btn.innerText = btnInfo.text;
-                btn.onclick = () => {
-                    hideModal();
-                    if (btnInfo.callback) btnInfo.callback();
-                };
-                modalButtons.appendChild(btn);
-            });
-            customModal.classList.add('show');
-        }
-
-        function hideModal() {
-            customModal.classList.remove('show');
-        }
-
-        // Guessing Game Logic
-        function startGuessingGame() {
-            guessingLevel = 1;
-            guessingScore = 0;
-            updateGuessingInfo();
-            nextGuessingQuestion();
-        }
-        function updateGuessingInfo() {
-            document.getElementById('guessing-level').innerText = `Level: ${guessingLevel}`;
-            document.getElementById('guessing-score').innerText = `Score: ${guessingScore}`;
-        }
-        function nextGuessingQuestion() {
-            document.getElementById('next-guessing-btn').classList.add('hidden');
-            const levelQuestions = guessingQuestions.filter(q => q.level === guessingLevel);
-            if (levelQuestions.length === 0) {
-                showModal('🎉 You completed all levels!', '', [{text: 'OK', callback: () => changePage('main-menu')}]);
-                return;
-            }
-            const q = levelQuestions[Math.floor(Math.random() * levelQuestions.length)];
-            document.getElementById('guessing-question').innerText = q.question;
-            const optionsDiv = document.getElementById('guessing-options');
-            optionsDiv.innerHTML = '';
-            q.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.classList.add('option-btn');
-                btn.onclick = () => checkGuessingAnswer(opt, q.answer);
-                optionsDiv.appendChild(btn);
-            });
-        }
-        function checkGuessingAnswer(selected, correct) {
-            const isCorrect = (selected === correct);
-            if (isCorrect) {
-                playCorrect();
-                guessingScore += 10 * guessingLevel;
-                if (guessingScore >= 50 * guessingLevel) {
-                    guessingLevel++;
-                    if (guessingLevel > 5) { guessingLevel = 5; } else { playLevelUp(); }
-                }
-                updateGuessingInfo();
-                showConfetti();
-                showModal('Yay Ella! Correct!', '', [{text: 'Awesome!', callback: nextGuessingQuestion}]);
-            } else {
-                playWrong();
-                showModal('Oops! Try again next time!', '', [{text: 'OK', callback: nextGuessingQuestion}]);
-            }
-            document.getElementById('guessing-options').querySelectorAll('button').forEach(btn => btn.disabled = true);
-        }
-
-        // Lying Game Logic
-        function startLyingGame() {
-            lyingLevel = 1;
-            lyingScore = 0;
-            updateLyingInfo();
-            nextLyingRound();
-        }
-        function updateLyingInfo() {
-            document.getElementById('lying-level').innerText = `Level: ${lyingLevel}`;
-            document.getElementById('lying-score').innerText = `Score: ${lyingScore}`;
-        }
-        function nextLyingRound() {
-            stopTicking();
-            document.getElementById('thinking-area').classList.add('hidden');
-            document.getElementById('next-lying-btn').classList.add('hidden');
-            document.getElementById('guess-result').innerHTML = '';
-            document.getElementById('lying-options').classList.remove('hidden');
-
-            const levelCategories = lyingCategories.filter(c => c.level === lyingLevel);
-            if (levelCategories.length === 0) {
-                showModal('🎉 You completed all levels!', '', [{text: 'OK', callback: () => changePage('main-menu')}]);
-                document.getElementById('lying-prompt').classList.add('hidden');
-                document.getElementById('lying-options').classList.add('hidden');
-                return;
-            }
-            const cat = levelCategories[Math.floor(Math.random() * levelCategories.length)];
-            document.getElementById('lying-prompt').innerText = cat.prompt;
-            const optionsDiv = document.getElementById('lying-options');
-            optionsDiv.innerHTML = '';
-            cat.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.classList.add('option-btn');
-                btn.onclick = () => submitLie(opt);
-                optionsDiv.appendChild(btn);
-            });
-            startTimer(15);
-        }
-        function startTimer(seconds) {
-            let timeLeft = seconds;
-            const timerProgress = document.getElementById('timer-progress');
-            timerProgress.innerText = timeLeft;
-            stopTicking();
-            startTicking();
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerProgress.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    stopTicking();
-                    showModal("⏰ Time's up, Ella! Let's try again.", '', [{text: 'OK', callback: nextLyingRound}]);
-                }
-            }, 1000);
-        }
-        function submitLie(choice) {
-            clearInterval(timerInterval);
-            stopTicking();
-            document.getElementById('lying-options').classList.add('hidden');
-            document.getElementById('thinking-area').classList.remove('hidden');
-            playThinking();
-            setTimeout(() => { guessLie(choice); }, 3000);
-        }
-        function guessLie(choice) {
-            document.getElementById('thinking-area').classList.add('hidden');
-            const isLying = Math.random() < (0.3 + (lyingLevel * 0.1)) ? 'lying' : 'telling the truth';
-            
-            // Show the AI's guess inside the modal
-            showModal(
-                `I think you're...<br><strong>${isLying}</strong>!`,
-                'Was I right? (Did I guess correctly?)',
-                [
-                    { text: 'Yes!', callback: () => checkLyingAnswer(true) },
-                    { text: 'No...', callback: () => checkLyingAnswer(false) }
-                ]
-            );
-        }
-        function checkLyingAnswer(wasCorrect) {
-            if (wasCorrect) {
-                lyingScore += 10 * lyingLevel;
-                if (lyingScore >= 30 * lyingLevel) {
-                    lyingLevel++;
-                    if (lyingLevel > 5) { lyingLevel = 5; } else { playLevelUp(); }
-                }
-                updateLyingInfo();
-                showConfetti();
-                showModal("Yay! I guessed right!", '', [{text: 'Cool!', callback: nextLyingRound}]);
-            } else {
-                showModal("Oh no! I was wrong. Better luck next time for me!", '', [{text: 'OK', callback: nextLyingRound}]);
-            }
-        }
-        
-        // Confetti Animation
-        function showConfetti() {
-            confettiContainer.innerHTML = '';
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.animationDelay = `${Math.random() * 2}s`;
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 75%)`;
-                confettiContainer.appendChild(confetti);
-            }
-            setTimeout(() => { confettiContainer.innerHTML = ''; }, 3000);
-        }
     </script>
+
 </body>
 </html>
