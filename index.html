@@ -224,7 +224,6 @@
             margin-top: 8px;
         }
 
-        /* Fun animations for coloring screen */
         .colorable-part {
             animation: pulse-part 1.5s infinite;
         }
@@ -568,17 +567,12 @@
                 const coloringCanvas = document.getElementById('coloring-canvas');
                 const ctx = coloringCanvas.getContext('2d');
                 ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
-
+                
                 const shades = ['#ccc', '#ddd', '#eee', '#fff', '#aaa']; 
                 currentImageParts = gameDrawings[correct](ctx, shades);
                 
-                currentImageParts.forEach(part => {
-                    ctx.fillStyle = part.color;
-                    ctx.fill(part.path);
-                    ctx.strokeStyle = '#333';
-                    ctx.lineWidth = 2;
-                    ctx.stroke(part.path);
-                });
+                // Initial draw of the image with outlines
+                drawColoringCanvas();
 
                 if (coloringAnimationId) {
                     cancelAnimationFrame(coloringAnimationId);
@@ -588,16 +582,18 @@
                     const rect = coloringCanvas.getBoundingClientRect();
                     const x = (event.clientX - rect.left) * (coloringCanvas.width / rect.width);
                     const y = (event.clientY - rect.top) * (coloringCanvas.height / rect.height);
-
-                    currentImageParts.forEach(part => {
-                        if (ctx.isPointInPath(part.path, x, y) && !partsColored.has(part.name)) {
-                            partsColored.add(part.name);
-                            playSound(440, 0.05);
-                            animateColorFill(ctx, part, selectedColor);
-                        }
+                    
+                    const partToColor = currentImageParts.find(part => {
+                        return ctx.isPointInPath(part.path, x, y) && !partsColored.has(part.name);
                     });
-                };
 
+                    if (partToColor) {
+                        partsColored.add(partToColor.name);
+                        playSound(440, 0.05);
+                        animateColorFill(ctx, partToColor, selectedColor);
+                    }
+                };
+                
                 partsColored = new Set();
                 animateColorableParts(ctx);
             } else {
@@ -608,37 +604,39 @@
             }
         }
 
+        function drawColoringCanvas() {
+            const coloringCanvas = document.getElementById('coloring-canvas');
+            const ctx = coloringCanvas.getContext('2d');
+            ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
+            currentImageParts.forEach(part => {
+                ctx.fillStyle = part.color;
+                ctx.fill(part.path);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke(part.path);
+            });
+        }
+
         function animateColorFill(ctx, part, targetColor) {
             const startColorRgb = hexToRgb(part.color);
             const targetColorRgb = hexToRgb(targetColor);
             const duration = 500;
             const startTime = performance.now();
             let isAnimating = true;
-            
-            function drawFrame() {
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                currentImageParts.forEach(p => {
-                    ctx.fillStyle = p.color;
-                    ctx.fill(p.path);
-                    ctx.strokeStyle = '#333';
-                    ctx.lineWidth = 2;
-                    ctx.stroke(p.path);
-                });
-            }
 
             const animate = (currentTime) => {
                 if (!isAnimating) return;
 
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-
+                
                 const r = Math.round(startColorRgb.r + (targetColorRgb.r - startColorRgb.r) * progress);
                 const g = Math.round(startColorRgb.g + (targetColorRgb.g - startColorRgb.g) * progress);
                 const b = Math.round(startColorRgb.b + (targetColorRgb.b - startColorRgb.b) * progress);
                 
                 part.color = rgbToHex(r, g, b);
 
-                drawFrame();
+                drawColoringCanvas();
                 
                 if (progress < 1) {
                     coloringAnimationId = requestAnimationFrame(animate);
@@ -656,15 +654,11 @@
         let animationFrameId = null;
         function animateColorableParts(ctx) {
             function animate(timestamp) {
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                // Clear and redraw canvas each frame to show pulse animation
+                drawColoringCanvas();
+
                 const time = timestamp * 0.001;
                 currentImageParts.forEach(part => {
-                    ctx.fillStyle = part.color;
-                    ctx.fill(part.path);
-                    ctx.strokeStyle = '#333';
-                    ctx.lineWidth = 2;
-                    ctx.stroke(part.path);
-
                     if (!partsColored.has(part.name)) {
                         const scale = 1 + Math.sin(time * 4) * 0.03;
                         ctx.save();
