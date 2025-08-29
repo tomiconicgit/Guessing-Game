@@ -155,6 +155,7 @@
         .svg-container svg * {
             stroke: #333; /* Outline color */
             stroke-width: 2;
+            transition: fill 0.5s ease-in-out; /* Improved coloring animation */
         }
         
         .color-palette {
@@ -271,44 +272,44 @@
         const gameData = {
             shapes: [
                 {
-                    question: "Pick the blue APPLE!",
-                    answer: "blue-apple",
+                    question: "APPLE",
+                    answer: "apple",
                     images: {
-                        'red-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path id="apple-stem" d="M95,60 C90,40 110,40 105,60 Z" fill="none" /><path id="apple-body" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></svg>',
-                        'green-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path id="apple-stem" d="M95,60 C90,40 110,40 105,60 Z" fill="none" /><path id="apple-body" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></svg>',
-                        'blue-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path id="apple-stem" d="M95,60 C90,40 110,40 105,60 Z" fill="none" /><path id="apple-body" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></svg>',
-                        'purple-apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path id="apple-stem" d="M95,60 C90,40 110,40 105,60 Z" fill="none" /><path id="apple-body" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></svg>'
+                        'apple-1': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path id="apple-body" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /><path id="apple-stem" d="M95,60 C90,40 110,40 105,60 Z" fill="none" /></svg>',
+                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" /></svg>',
+                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="80" fill="none" /></svg>',
+                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="20" y="20" width="160" height="160" fill="none" /></svg>'
                     }
                 },
                 {
-                    question: "Pick the green TRIANGLE!",
-                    answer: "green-triangle",
+                    question: "TRIANGLE",
+                    answer: "triangle",
                     images: {
-                        'red-circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="80" fill="none" /></svg>',
-                        'blue-square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="20" y="20" width="160" height="160" fill="none" /></svg>',
-                        'green-triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" /></svg>',
-                        'yellow-star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,10 40,190 190,70 10,70 160,190" fill="none" /></svg>'
+                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="80" fill="none" /></svg>',
+                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="20" y="20" width="160" height="160" fill="none" /></svg>',
+                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" /></svg>',
+                        'star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,10 40,190 190,70 10,70 160,190" fill="none" /></svg>'
                     }
                 }
             ],
             buildings_cars: [
                 {
-                    question: "Which one is a CASTLE?",
+                    question: "CASTLE",
                     answer: "castle",
                     images: {
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,20 L20,100 L180,100 Z" fill="none" /><path id="house-walls" d="M40,100 L40,180 L160,180 L160,100 Z" fill="none" /><rect id="house-door" x="80" y="140" width="40" height="40" fill="none" /></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M20,180 L20,80 C20,80 40,60 60,80 L60,180 L140,180 L140,80 C140,80 160,60 180,80 L180,180 Z" fill="none" /><path id="castle-tower" d="M60,80 L60,40 C60,40 70,20 80,40 L80,80 M120,80 L120,40 C120,40 130,20 140,40 L140,80 M100,20 L90,10 M110,20 L120,10 M100,20 C90,20 90,40 100,40 C110,40 110,20 100,20" fill="none" /><path id="castle-flag" d="M150,80 L150,40 C150,40 160,20 170,40 L170,80" fill="none" /></g></svg>',
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,20 L20,100 L180,100 Z" fill="none" /><path id="house-walls" d="M40,100 L40,180 L160,180 L160,100 Z" fill="none" /><rect id="house-door" x="80" y="140" width="40" height="40" fill="none" /><rect id="house-window1" x="50" y="110" width="20" height="20" fill="none" /><rect id="house-window2" x="130" y="110" width="20" height="20" fill="none" /></g></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M20,180 L20,80 C20,80 40,60 60,80 L60,180 L140,180 L140,80 C140,80 160,60 180,80 L180,180 Z" fill="none" /><path id="castle-tower1" d="M40,180 L40,60 C40,40 50,40 60,60 L60,180 Z" fill="none" /><path id="castle-tower2" d="M140,180 L140,60 C140,40 150,40 160,60 L160,180 Z" fill="none" /><rect id="castle-flag" x="150" y="20" width="10" height="30" fill="none" /><path id="castle-crenellation1" d="M40,60 L50,60 M50,60 L50,50 L40,50 Z" fill="none" /><path id="castle-crenellation2" d="M140,60 L150,60 M150,60 L150,50 L140,50 Z" fill="none" /></g></svg>',
                         'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,120 L40,100 L160,100 L180,120 L180,160 L20,160 Z" fill="none" /><path id="car-top" d="M45,100 L155,100 C155,100 165,80 155,60 C145,40 55,40 45,60 C35,80 45,100 45,100 Z" fill="none" /><circle id="car-wheel-front" cx="60" cy="160" r="15" fill="none" /><circle id="car-wheel-back" cx="140" cy="160" r="15" fill="none" /></g></svg>',
                         'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,120 L90,180 L110,180 L110,120 Z" fill="none" /><path id="tree-leaves" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></g></svg>'
                     }
                 },
                 {
-                    question: "Which one is a CAR?",
+                    question: "CAR",
                     answer: "car",
                     images: {
                         'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,120 L40,100 L160,100 L180,120 L180,160 L20,160 Z" fill="none" /><path id="car-top" d="M45,100 L155,100 C155,100 165,80 155,60 C145,40 55,40 45,60 C35,80 45,100 45,100 Z" fill="none" /><circle id="car-wheel-front" cx="60" cy="160" r="15" fill="none" /><circle id="car-wheel-back" cx="140" cy="160" r="15" fill="none" /></g></svg>',
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,20 L20,100 L180,100 Z" fill="none" /><path id="house-walls" d="M40,100 L40,180 L160,180 L160,100 Z" fill="none" /><rect id="house-door" x="80" y="140" width="40" height="40" fill="none" /></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M20,180 L20,80 C20,80 40,60 60,80 L60,180 L140,180 L140,80 C140,80 160,60 180,80 L180,180 Z" fill="none" /><path id="castle-tower" d="M60,80 L60,40 C60,40 70,20 80,40 L80,80 M120,80 L120,40 C120,40 130,20 140,40 L140,80 M100,20 L90,10 M110,20 L120,10 M100,20 C90,20 90,40 100,40 C110,40 110,20 100,20" fill="none" /><path id="castle-flag" d="M150,80 L150,40 C150,40 160,20 170,40 L170,80" fill="none" /></g></svg>',
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,20 L20,100 L180,100 Z" fill="none" /><path id="house-walls" d="M40,100 L40,180 L160,180 L160,100 Z" fill="none" /><rect id="house-door" x="80" y="140" width="40" height="40" fill="none" /><rect id="house-window1" x="50" y="110" width="20" height="20" fill="none" /><rect id="house-window2" x="130" y="110" width="20" height="20" fill="none" /></g></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M20,180 L20,80 C20,80 40,60 60,80 L60,180 L140,180 L140,80 C140,80 160,60 180,80 L180,180 Z" fill="none" /><path id="castle-tower1" d="M40,180 L40,60 C40,40 50,40 60,60 L60,180 Z" fill="none" /><path id="castle-tower2" d="M140,180 L140,60 C140,40 150,40 160,60 L160,180 Z" fill="none" /><rect id="castle-flag" x="150" y="20" width="10" height="30" fill="none" /><path id="castle-crenellation1" d="M40,60 L50,60 M50,60 L50,50 L40,50 Z" fill="none" /><path id="castle-crenellation2" d="M140,60 L150,60 M150,60 L150,50 L140,50 Z" fill="none" /></g></svg>',
                         'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,120 L90,180 L110,180 L110,120 Z" fill="none" /><path id="tree-leaves" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></g></svg>'
                     }
                 }
@@ -316,8 +317,7 @@
         };
 
         const imageDetails = {
-            'red-apple': 'apple', 'green-apple': 'apple', 'blue-apple': 'apple', 'purple-apple': 'apple',
-            'red-circle': 'circle', 'blue-square': 'square', 'green-triangle': 'triangle', 'yellow-star': 'star',
+            'apple-1': 'apple', 'triangle': 'triangle', 'circle': 'circle', 'square': 'square', 'star': 'star',
             'house': 'house', 'castle': 'castle', 'car': 'car', 'tree': 'tree'
         };
 
@@ -411,7 +411,6 @@
                         partsToColor.add(part.id);
                         part.onclick = () => colorSvgPart(part);
                         part.style.cursor = 'pointer';
-                        part.style.transition = 'fill 0.5s ease-in-out';
                     }
                 });
 
