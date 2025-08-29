@@ -6,8 +6,8 @@
     <title>Interactive Game</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background-color: #e6f3ff;
             color: #333;
             margin: 0;
             padding: 20px;
@@ -20,13 +20,12 @@
 
         #game-container {
             width: 100%;
-            max-width: 600px;
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+            max-width: 700px;
+            background-color: #fff;
+            border-radius: 25px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            padding: 40px;
             box-sizing: border-box;
-            position: relative;
         }
 
         .page {
@@ -34,150 +33,135 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 400px;
+            min-height: 450px;
         }
-        
+
         .page.active {
             display: flex;
         }
 
         h1 {
-            font-size: 2.5em;
-            color: #4b0082;
-            margin-bottom: 10px;
+            font-size: 3em;
+            color: #ff4500;
+            margin-bottom: 15px;
         }
-        
+
         h2 {
-            font-size: 2em;
+            font-size: 2.2em;
             color: #008080;
             margin-top: 0;
         }
-        
+
         p {
-            font-size: 1.2em;
+            font-size: 1.3em;
         }
 
         button {
             background-color: #ff6347;
             color: white;
             border: none;
-            padding: 15px 30px;
-            margin: 10px;
-            font-size: 1.2em;
-            border-radius: 10px;
+            padding: 15px 35px;
+            margin: 12px;
+            font-size: 1.3em;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         button:hover {
             background-color: #e5533d;
+            transform: scale(1.05);
         }
 
         #category-buttons button {
-            background-color: #20b2aa;
+            background-color: #32cd32;
         }
-        
+
         #category-buttons button:hover {
-            background-color: #1a9690;
+            background-color: #28a745;
         }
 
         #question-text {
-            font-size: 1.5em;
+            font-size: 2em;
             font-weight: bold;
-            color: #4b0082;
-            margin-bottom: 20px;
+            color: #ff4500;
+            margin-bottom: 25px;
         }
 
         #image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 20px;
+            gap: 25px;
+            margin-top: 25px;
         }
 
         .image-option {
-            background-color: #e6f3ff;
-            border: 4px solid transparent;
-            border-radius: 15px;
+            background-color: #f0f8ff;
+            border: 5px solid transparent;
+            border-radius: 20px;
             cursor: pointer;
             transition: transform 0.3s, border-color 0.3s;
-            padding: 10px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
 
         .image-option svg {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
         }
 
         .image-option:hover {
             animation: bounce 0.5s infinite;
         }
-        
+
         @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
-        
+
         .image-option.correct {
-            border-color: #28a745;
+            border-color: #32cd32;
+            animation: pulse 0.5s ease-in-out 2;
         }
-        
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
         .image-option.wrong {
-            border-color: #dc3545;
+            border-color: #ff4500;
         }
 
-        #coloring-area {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .svg-container {
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 20px;
-        }
-        
-        .svg-container svg {
-            width: 100%;
-            height: auto;
-        }
-        
-        .svg-container svg * {
-            stroke: #333; /* Outline color */
-            stroke-width: 2;
-            transition: fill 0.5s ease-in-out; /* Improved coloring animation */
-        }
-        
+        #coloring DO NOT USE
         .color-palette {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
-        
+
         .color-swatch {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: 2px solid #ccc;
+            border: 3px solid #ccc;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
         .color-swatch.active {
-            transform: scale(1.2);
+            transform: scale(1.15);
             border-color: #333;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
         }
 
         .modal {
@@ -186,7 +170,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             display: none;
             justify-content: center;
             align-items: center;
@@ -195,28 +179,41 @@
 
         .modal-content {
             background-color: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
-        
+
         .modal-content h3 {
-            margin: 0 0 10px;
+            margin: 0 0 15px;
             color: #333;
+            font-size: 1.5em;
         }
 
         .image-label {
-            font-size: 1em;
+            font-size: 1.1em;
             font-weight: bold;
             text-transform: uppercase;
-            color: #4b0082;
-            margin-top: 5px;
+            color: #ff4500;
+            margin-top: 8px;
+        }
+
+        @keyframes fillAnimation {
+            0% {
+                fill: transparent;
+                transform: scale(0.5);
+                opacity: 0.3;
+            }
+            100% {
+                fill: var(--fill-color);
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-
     <div id="game-container">
         <div id="menu" class="page active">
             <h1>Interactive Game</h1>
@@ -237,12 +234,12 @@
             <p id="question-text"></p>
             <div id="image-grid"></div>
             <div id="coloring-area" style="display: none;">
-                <p>Looks great! Now color it in!</p>
+                <p>Color it in!</p>
                 <div class="color-palette">
-                    <div class="color-swatch active" style="background-color: #ff6347;" data-color="#ff6347"></div>
-                    <div class="color-swatch" style="background-color: #20b2aa;" data-color="#20b2aa"></div>
-                    <div class="color-swatch" style="background-color: #8a2be2;" data-color="#8a2be2"></div>
-                    <div class="color-swatch" style="background-color: #ffd700;" data-color="#ffd700"></div>
+                    <div class="color-swatch active" style="background-color: #ff4500;" data-color="#ff4500"></div>
+                    <div class="color-swatch" style="background-color: #00ff00;" data-color="#00ff00"></div>
+                    <div class="color-swatch" style="background-color: #1e90ff;" data-color="#1e90ff"></div>
+                    <div class="color-swatch" style="background-color: #ffff00;" data-color="#ffff00"></div>
                 </div>
                 <div id="svg-container" class="svg-container"></div>
             </div>
@@ -257,7 +254,6 @@
     </div>
 
     <script>
-        // --- Game Logic ---
         const pages = document.querySelectorAll('.page');
         const modal = document.getElementById('myModal');
         const modalText = document.getElementById('modal-text');
@@ -265,7 +261,7 @@
         let currentCategory = '';
         let currentQuestionIndex = 0;
         let isCorrect = false;
-        let selectedColor = '#ff6347';
+        let selectedColor = '#ff4500';
         let partsToColor = new Set();
         let partsColored = new Set();
 
@@ -275,20 +271,20 @@
                     question: "APPLE",
                     answer: "apple",
                     images: {
-                        'apple-1': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path id="apple-body" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /><path id="apple-stem" d="M95,60 C90,40 110,40 105,60 Z" fill="none" /></svg>',
-                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" /></svg>',
-                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="80" fill="none" /></svg>',
-                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="20" y="20" width="160" height="160" fill="none" /></svg>'
+                        'apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="apple-parts"><path id="apple-body" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="apple-leaf" d="M110,30 C120,20 140,20 150,30 C140,40 120,40 110,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="apple-stem" d="M95,50 C90,30 110,30 105,50 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
+                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
+                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>'
                     }
                 },
                 {
                     question: "TRIANGLE",
                     answer: "triangle",
                     images: {
-                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="80" fill="none" /></svg>',
-                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="20" y="20" width="160" height="160" fill="none" /></svg>',
-                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" /></svg>',
-                        'star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,10 40,190 190,70 10,70 160,190" fill="none" /></svg>'
+                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
+                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
+                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>',
+                        'star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,20 120,80 180,80 130,120 150,180 100,140 50,180 70,120 20,80 80,80" fill="none" stroke="#333" stroke-width="3" filter="url(#shadow)"/><defs><filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/></filter></defs></svg>'
                     }
                 }
             ],
@@ -297,38 +293,35 @@
                     question: "CASTLE",
                     answer: "castle",
                     images: {
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,20 L20,100 L180,100 Z" fill="none" /><path id="house-walls" d="M40,100 L40,180 L160,180 L160,100 Z" fill="none" /><rect id="house-door" x="80" y="140" width="40" height="40" fill="none" /><rect id="house-window1" x="50" y="110" width="20" height="20" fill="none" /><rect id="house-window2" x="130" y="110" width="20" height="20" fill="none" /></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M20,180 L20,80 C20,80 40,60 60,80 L60,180 L140,180 L140,80 C140,80 160,60 180,80 L180,180 Z" fill="none" /><path id="castle-tower1" d="M40,180 L40,60 C40,40 50,40 60,60 L60,180 Z" fill="none" /><path id="castle-tower2" d="M140,180 L140,60 C140,40 150,40 160,60 L160,180 Z" fill="none" /><rect id="castle-flag" x="150" y="20" width="10" height="30" fill="none" /><path id="castle-crenellation1" d="M40,60 L50,60 M50,60 L50,50 L40,50 Z" fill="none" /><path id="castle-crenellation2" d="M140,60 L150,60 M150,60 L150,50 L140,50 Z" fill="none" /></g></svg>',
-                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,120 L40,100 L160,100 L180,120 L180,160 L20,160 Z" fill="none" /><path id="car-top" d="M45,100 L155,100 C155,100 165,80 155,60 C145,40 55,40 45,60 C35,80 45,100 45,100 Z" fill="none" /><circle id="car-wheel-front" cx="60" cy="160" r="15" fill="none" /><circle id="car-wheel-back" cx="140" cy="160" r="15" fill="none" /></g></svg>',
-                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,120 L90,180 L110,180 L110,120 Z" fill="none" /><path id="tree-leaves" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></g></svg>'
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z" fill="none" stroke="#333" stroke-width="3"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="house-door" x="80" y="130" width="40" height="50" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window1" x="50" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window2" x="125" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window1" x="50" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window2" x="130" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z" fill="none" stroke="#333" stroke-width="3"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-front" cx="60" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-back" cx="140" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><rect id="car-window" x="70" y="80" width="60" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>'
                     }
                 },
                 {
                     question: "CAR",
                     answer: "car",
                     images: {
-                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,120 L40,100 L160,100 L180,120 L180,160 L20,160 Z" fill="none" /><path id="car-top" d="M45,100 L155,100 C155,100 165,80 155,60 C145,40 55,40 45,60 C35,80 45,100 45,100 Z" fill="none" /><circle id="car-wheel-front" cx="60" cy="160" r="15" fill="none" /><circle id="car-wheel-back" cx="140" cy="160" r="15" fill="none" /></g></svg>',
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,20 L20,100 L180,100 Z" fill="none" /><path id="house-walls" d="M40,100 L40,180 L160,180 L160,100 Z" fill="none" /><rect id="house-door" x="80" y="140" width="40" height="40" fill="none" /><rect id="house-window1" x="50" y="110" width="20" height="20" fill="none" /><rect id="house-window2" x="130" y="110" width="20" height="20" fill="none" /></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M20,180 L20,80 C20,80 40,60 60,80 L60,180 L140,180 L140,80 C140,80 160,60 180,80 L180,180 Z" fill="none" /><path id="castle-tower1" d="M40,180 L40,60 C40,40 50,40 60,60 L60,180 Z" fill="none" /><path id="castle-tower2" d="M140,180 L140,60 C140,40 150,40 160,60 L160,180 Z" fill="none" /><rect id="castle-flag" x="150" y="20" width="10" height="30" fill="none" /><path id="castle-crenellation1" d="M40,60 L50,60 M50,60 L50,50 L40,50 Z" fill="none" /><path id="castle-crenellation2" d="M140,60 L150,60 M150,60 L150,50 L140,50 Z" fill="none" /></g></svg>',
-                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,120 L90,180 L110,180 L110,120 Z" fill="none" /><path id="tree-leaves" d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="none" /></g></svg>'
+                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z" fill="none" stroke="#333" stroke-width="3"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-front" cx="60" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><circle id="car-wheel-back" cx="140" cy="160" r="20" fill="none" stroke="#333" stroke-width="3"/><rect id="car-window" x="70" y="80" width="60" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z" fill="none" stroke="#333" stroke-width="3"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="house-door" x="80" y="130" width="40" height="50" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window1" x="50" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><rect id="house-window2" x="125" y="100" width="25" height="25" fill="none" stroke="#333" stroke-width="3"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z" fill="none" stroke="#333" stroke-width="3"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window1" x="50" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/><rect id="castle-window2" x="130" y="100" width="20" height="20" fill="none" stroke="#333" stroke-width="3"/></g></svg>',
+                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z" fill="none" stroke="#333" stroke-width="3"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z" fill="none" stroke="#333" stroke-width="3"/></g></svg>'
                     }
                 }
             ]
         };
 
         const imageDetails = {
-            'apple-1': 'apple', 'triangle': 'triangle', 'circle': 'circle', 'square': 'square', 'star': 'star',
+            'apple': 'apple', 'triangle': 'triangle', 'circle': 'circle', 'square': 'square', 'star': 'star',
             'house': 'house', 'castle': 'castle', 'car': 'car', 'tree': 'tree'
         };
 
-        // UI Functions
         function changePage(id) {
-            pages.forEach(page => {
-                page.classList.remove('active');
-            });
+            pages.forEach(page => page.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-        
+
         function startGame() {
             changePage('categories');
         }
@@ -338,12 +331,11 @@
             modal.style.display = 'flex';
             setTimeout(closeModal, duration);
         }
-        
+
         function closeModal() {
             modal.style.display = 'none';
         }
 
-        // Game Logic
         function selectCategory(category) {
             currentCategory = category;
             currentQuestionIndex = 0;
@@ -364,7 +356,7 @@
             document.getElementById('question-text').innerText = questionData.question;
             const grid = document.getElementById('image-grid');
             grid.innerHTML = '';
-            
+
             const imageKeys = Object.keys(questionData.images).sort(() => Math.random() - 0.5);
 
             imageKeys.forEach(key => {
@@ -395,10 +387,10 @@
                 element.classList.add('correct');
                 showModal("Correct! Great job!", 1000);
                 playSound(800, 0.1);
-                
+
                 document.getElementById('image-grid').style.display = 'none';
                 document.getElementById('coloring-area').style.display = 'flex';
-                
+
                 const svgContainer = document.getElementById('svg-container');
                 const svgClone = element.querySelector('svg').cloneNode(true);
                 svgContainer.innerHTML = '';
@@ -413,26 +405,24 @@
                         part.style.cursor = 'pointer';
                     }
                 });
-
             } else {
                 element.classList.add('wrong');
                 showModal("Oops! Try again!", 1000);
                 playSound(200, 0.3, 'sawtooth');
-                setTimeout(() => {
-                    element.classList.remove('wrong');
-                }, 1000);
+                setTimeout(() => element.classList.remove('wrong'), 1000);
             }
         }
-        
+
         function colorSvgPart(part) {
             if (partsColored.has(part.id)) return;
 
-            part.style.fill = selectedColor;
+            part.style.setProperty('--fill-color', selectedColor);
+            part.style.animation = 'fillAnimation 0.7s ease-in-out forwards';
             partsColored.add(part.id);
             playSound(440, 0.05);
 
             if (partsColored.size === partsToColor.size) {
-                showModal("All done! Let's go to the next one!", 1500);
+                showModal("All done! Next one!", 1500);
                 setTimeout(nextQuestion, 1500);
             }
         }
@@ -441,7 +431,7 @@
             currentQuestionIndex++;
             loadQuestion();
         }
-        
+
         document.querySelectorAll('.color-swatch').forEach(swatch => {
             swatch.onclick = () => {
                 document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
@@ -463,7 +453,7 @@
             oscillator.type = type;
             gainNode.gain.value = volume;
             oscillator.start();
-            setTimeout(() => { oscillator.stop(); }, duration * 1000);
+            setTimeout(() => oscillator.stop(), duration * 1000);
         }
     </script>
 </body>
