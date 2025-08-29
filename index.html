@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Game</title>
+    <title>Interactive Canvas Game</title>
     <style>
         body {
             font-family: 'Comic Sans MS', 'Arial', sans-serif;
@@ -95,7 +95,7 @@
             margin-top: 25px;
         }
 
-        .image-option {
+        .canvas-option {
             background-color: #f0f8ff;
             border: 5px solid transparent;
             border-radius: 20px;
@@ -107,18 +107,12 @@
             align-items: center;
         }
 
-        .image-option svg {
+        .canvas-option canvas {
             width: 120px;
             height: 120px;
         }
 
-        /* Set SVG fills to solid black for quiz questions */
-        .image-option svg * {
-            fill: #000;
-            stroke: none; /* No outline needed on solid shapes */
-        }
-
-        .image-option:hover {
+        .canvas-option:hover {
             animation: bounce 0.5s infinite;
         }
 
@@ -127,7 +121,7 @@
             50% { transform: translateY(-8px); }
         }
 
-        .image-option.correct {
+        .canvas-option.correct {
             border-color: #32cd32;
             animation: pulse 0.5s ease-in-out 2;
         }
@@ -137,29 +131,22 @@
             50% { transform: scale(1.1); }
         }
 
-        .image-option.wrong {
+        .canvas-option.wrong {
             border-color: #ff4500;
         }
 
-        /* Coloring area styles */
         #coloring-area {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        #svg-container {
+        #coloring-canvas {
             width: 100%;
             max-width: 300px;
+            border: 3px solid #333;
+            border-radius: 10px;
             margin-bottom: 20px;
-        }
-        
-        /* Coloring SVGs start with no fill and black outlines */
-        #svg-container svg * {
-            fill: none;
-            stroke: #333;
-            stroke-width: 3;
-            transition: fill 0.7s ease-in-out, stroke 0.3s;
         }
 
         .color-palette {
@@ -224,11 +211,6 @@
             color: #ff4500;
             margin-top: 8px;
         }
-
-        @keyframes fillAnimation {
-            0% { fill: transparent; }
-            100% { fill: var(--fill-color); }
-        }
     </style>
 </head>
 <body>
@@ -259,7 +241,7 @@
                     <div class="color-swatch" style="background-color: #1e90ff;" data-color="#1e90ff"></div>
                     <div class="color-swatch" style="background-color: #ffff00;" data-color="#ffff00"></div>
                 </div>
-                <div id="svg-container" class="svg-container"></div>
+                <canvas id="coloring-canvas" width="300" height="300"></canvas>
             </div>
         </div>
     </div>
@@ -272,6 +254,7 @@
     </div>
 
     <script>
+        // --- Game Logic ---
         const pages = document.querySelectorAll('.page');
         const modal = document.getElementById('myModal');
         const modalText = document.getElementById('modal-text');
@@ -280,66 +263,175 @@
         let currentQuestionIndex = 0;
         let isCorrect = false;
         let selectedColor = '#ff4500';
-        let partsToColor = new Set();
         let partsColored = new Set();
+        let currentImageParts = [];
+
+        // Image Data: Drawing functions for each shape
+        const gameDrawings = {
+            'apple': (ctx, color = '#000') => {
+                const parts = [
+                    // Apple body
+                    {
+                        name: 'body',
+                        path: new Path2D(),
+                        color: color
+                    },
+                    // Leaf
+                    {
+                        name: 'leaf',
+                        path: new Path2D(),
+                        color: color
+                    },
+                    // Stem
+                    {
+                        name: 'stem',
+                        path: new Path2D(),
+                        color: color
+                    }
+                ];
+
+                // Draw Apple Body
+                parts[0].path.moveTo(150, 45);
+                parts[0].path.bezierCurveTo(225, 45, 270, 105, 270, 165);
+                parts[0].path.bezierCurveTo(270, 225, 210, 270, 150, 270);
+                parts[0].path.bezierCurveTo(90, 270, 30, 225, 30, 165);
+                parts[0].path.bezierCurveTo(30, 105, 75, 45, 150, 45);
+
+                // Draw Leaf
+                parts[1].path.moveTo(165, 45);
+                parts[1].path.bezierCurveTo(180, 30, 210, 30, 225, 45);
+                parts[1].path.bezierCurveTo(210, 60, 180, 60, 165, 45);
+
+                // Draw Stem
+                parts[2].path.moveTo(143, 75);
+                parts[2].path.bezierCurveTo(135, 45, 165, 45, 158, 75);
+
+                return parts;
+            },
+            'triangle': (ctx, color = '#000') => {
+                const path = new Path2D();
+                path.moveTo(150, 30);
+                path.lineTo(270, 270);
+                path.lineTo(30, 270);
+                path.closePath();
+                return [{ name: 'shape', path: path, color: color }];
+            },
+            'circle': (ctx, color = '#000') => {
+                const path = new Path2D();
+                path.arc(150, 150, 128, 0, 2 * Math.PI);
+                return [{ name: 'shape', path: path, color: color }];
+            },
+            'square': (ctx, color = '#000') => {
+                const path = new Path2D();
+                path.rect(22, 22, 256, 256);
+                return [{ name: 'shape', path: path, color: color }];
+            },
+            'star': (ctx, color = '#000') => {
+                const path = new Path2D();
+                path.moveTo(150, 30);
+                path.lineTo(180, 110);
+                path.lineTo(260, 110);
+                path.lineTo(200, 160);
+                path.lineTo(220, 240);
+                path.lineTo(150, 200);
+                path.lineTo(80, 240);
+                path.lineTo(100, 160);
+                path.lineTo(40, 110);
+                path.lineTo(120, 110);
+                path.closePath();
+                return [{ name: 'shape', path: path, color: color }];
+            },
+            'house': (ctx, color = '#000') => {
+                const parts = [
+                    { name: 'roof', path: new Path2D(), color: color },
+                    { name: 'walls', path: new Path2D(), color: color },
+                    { name: 'door', path: new Path2D(), color: color },
+                    { name: 'window1', path: new Path2D(), color: color },
+                    { name: 'window2', path: new Path2D(), color: color },
+                    { name: 'chimney', path: new Path2D(), color: color }
+                ];
+                parts[0].path.moveTo(150, 45); parts[0].path.lineTo(30, 135); parts[0].path.lineTo(270, 135); parts[0].path.closePath();
+                parts[1].path.rect(45, 135, 210, 135);
+                parts[2].path.rect(120, 210, 60, 60);
+                parts[3].path.rect(75, 165, 38, 38);
+                parts[4].path.rect(188, 165, 38, 38);
+                parts[5].path.rect(210, 135, 22, 30);
+                return parts;
+            },
+            'castle': (ctx, color = '#000') => {
+                const parts = [
+                    { name: 'mainWall', path: new Path2D(), color: color },
+                    { name: 'leftTower', path: new Path2D(), color: color },
+                    { name: 'rightTower', path: new Path2D(), color: color },
+                    { name: 'flag', path: new Path2D(), color: color },
+                    { name: 'window1', path: new Path2D(), color: color },
+                    { name: 'window2', path: new Path2D(), color: color }
+                ];
+                parts[0].path.rect(60, 100, 180, 180);
+                parts[1].path.rect(30, 45, 60, 235);
+                parts[2].path.rect(210, 45, 60, 235);
+                parts[3].path.moveTo(250, 60); parts[3].path.lineTo(265, 45); parts[3].path.lineTo(280, 60); parts[3].path.lineTo(265, 75); parts[3].path.closePath();
+                parts[4].path.rect(80, 140, 25, 25);
+                parts[5].path.rect(195, 140, 25, 25);
+                return parts;
+            },
+            'car': (ctx, color = '#000') => {
+                const parts = [
+                    { name: 'body', path: new Path2D(), color: color },
+                    { name: 'roof', path: new Path2D(), color: color },
+                    { name: 'frontWheel', path: new Path2D(), color: color },
+                    { name: 'backWheel', path: new Path2D(), color: color }
+                ];
+                parts[0].path.moveTo(30, 180); parts[0].path.lineTo(270, 180); parts[0].path.lineTo(270, 240); parts[0].path.lineTo(30, 240); parts[0].path.closePath();
+                parts[1].path.moveTo(75, 180); parts[1].path.lineTo(135, 120); parts[1].path.lineTo(225, 120); parts[1].path.lineTo(240, 180); parts[1].path.closePath();
+                parts[2].path.arc(90, 240, 30, 0, 2 * Math.PI);
+                parts[3].path.arc(210, 240, 30, 0, 2 * Math.PI);
+                return parts;
+            },
+            'tree': (ctx, color = '#000') => {
+                const parts = [
+                    { name: 'trunk', path: new Path2D(), color: color },
+                    { name: 'leaves', path: new Path2D(), color: color }
+                ];
+                parts[0].path.rect(125, 180, 50, 90);
+                parts[1].path.arc(150, 150, 120, 0, 2 * Math.PI);
+                return parts;
+            }
+        };
 
         const gameData = {
             shapes: [
                 {
                     question: "APPLE",
                     answer: "apple",
-                    images: {
-                        'apple': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="apple-parts"><path id="apple-body" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z"/><path id="apple-leaf" d="M110,30 C120,20 140,20 150,30 C140,40 120,40 110,30 Z"/><path id="apple-stem" d="M95,50 C90,30 110,30 105,50 Z"/></g></svg>',
-                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180"/></svg>',
-                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85"/></svg>',
-                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170"/></svg>'
-                    }
+                    images: ['apple', 'triangle', 'circle', 'square']
                 },
                 {
                     question: "TRIANGLE",
                     answer: "triangle",
-                    images: {
-                        'circle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle id="circle-shape" cx="100" cy="100" r="85"/></svg>',
-                        'square': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect id="square-shape" x="15" y="15" width="170" height="170"/></svg>',
-                        'triangle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="triangle-shape" points="100,20 180,180 20,180"/></svg>',
-                        'star': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><polygon id="star-shape" points="100,20 120,80 180,80 130,120 150,180 100,140 50,180 70,120 20,80 80,80"/></svg>'
-                    }
+                    images: ['circle', 'square', 'triangle', 'star']
                 }
             ],
             buildings_cars: [
                 {
                     question: "CASTLE",
                     answer: "castle",
-                    images: {
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z"/><rect id="house-door" x="80" y="130" width="40" height="50"/><rect id="house-window1" x="50" y="100" width="25" height="25"/><rect id="house-window2" x="125" y="100" width="25" height="25"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z"/></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z"/><rect id="castle-window1" x="50" y="100" width="20" height="20"/><rect id="castle-window2" x="130" y="100" width="20" height="20"/></g></svg>',
-                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z"/><circle id="car-wheel-front" cx="60" cy="160" r="20"/><circle id="car-wheel-back" cx="140" cy="160" r="20"/><rect id="car-window" x="70" y="80" width="60" height="20"/></g></svg>',
-                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z"/></g></svg>'
-                    }
+                    images: ['house', 'castle', 'car', 'tree']
                 },
                 {
                     question: "CAR",
                     answer: "car",
-                    images: {
-                        'car': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="car-parts"><path id="car-body" d="M20,130 L40,100 L160,100 L180,130 L180,160 L20,160 Z"/><path id="car-top" d="M50,100 L150,100 C150,90 160,80 150,70 C140,60 60,60 50,70 C40,80 50,100 50,100 Z"/><circle id="car-wheel-front" cx="60" cy="160" r="20"/><circle id="car-wheel-back" cx="140" cy="160" r="20"/><rect id="car-window" x="70" y="80" width="60" height="20"/></g></svg>',
-                        'house': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="house-parts"><path id="house-roof" d="M100,30 L20,90 L180,90 Z"/><path id="house-walls" d="M30,90 L30,180 L170,180 L170,90 Z"/><rect id="house-door" x="80" y="130" width="40" height="50"/><rect id="house-window1" x="50" y="100" width="25" height="25"/><rect id="house-window2" x="125" y="100" width="25" height="25"/><path id="house-chimney" d="M140,90 L140,60 L155,60 L155,90 Z"/></g></svg>',
-                        'castle': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="castle-parts"><path id="castle-wall" d="M30,180 L30,80 C30,70 45,60 60,80 L60,180 L140,180 L140,80 C140,70 155,60 170,80 L170,180 Z"/><path id="castle-tower1" d="M40,180 L40,50 C40,40 50,40 60,50 L60,180 Z"/><path id="castle-tower2" d="M140,180 L140,50 C140,40 150,40 160,50 L160,180 Z"/><path id="castle-flag" d="M155,50 C155,40 165,30 170,40 C165,50 155,50 155,50 Z"/><rect id="castle-window1" x="50" y="100" width="20" height="20"/><rect id="castle-window2" x="130" y="100" width="20" height="20"/></g></svg>',
-                        'tree': '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g id="tree-parts"><path id="tree-trunk" d="M90,130 L90,180 L110,180 L110,130 Z"/><path id="tree-leaves" d="M100,30 C150,30 180,70 180,110 C180,150 140,180 100,180 C60,180 20,150 20,110 C20,70 50,30 100,30 Z"/><path id="tree-leaves2" d="M100,60 C130,60 150,80 150,100 C150,120 130,140 100,140 C70,140 50,120 50,100 C50,80 70,60 100,60 Z"/></g></svg>'
-                    }
+                    images: ['car', 'house', 'castle', 'tree']
                 }
             ]
         };
 
-        const imageDetails = {
-            'apple': 'apple', 'triangle': 'triangle', 'circle': 'circle', 'square': 'square', 'star': 'star',
-            'house': 'house', 'castle': 'castle', 'car': 'car', 'tree': 'tree'
-        };
-
+        // UI Functions
         function changePage(id) {
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-
+        
         function startGame() {
             changePage('categories');
         }
@@ -349,11 +441,12 @@
             modal.style.display = 'flex';
             setTimeout(closeModal, duration);
         }
-
+        
         function closeModal() {
             modal.style.display = 'none';
         }
 
+        // Game Logic
         function selectCategory(category) {
             currentCategory = category;
             currentQuestionIndex = 0;
@@ -369,26 +462,39 @@
                 return;
             }
 
-            const categoryQuestions = gameData[currentCategory];
-            const questionData = categoryQuestions[currentQuestionIndex];
+            const questionData = gameData[currentCategory][currentQuestionIndex];
             document.getElementById('question-text').innerText = questionData.question;
             const grid = document.getElementById('image-grid');
             grid.innerHTML = '';
+            
+            const shuffledImages = questionData.images.sort(() => Math.random() - 0.5);
 
-            const imageKeys = Object.keys(questionData.images).sort(() => Math.random() - 0.5);
-
-            imageKeys.forEach(key => {
+            shuffledImages.forEach(imageName => {
                 const div = document.createElement('div');
-                div.classList.add('image-option');
-                div.dataset.answer = key;
-                div.innerHTML = questionData.images[key];
+                div.classList.add('canvas-option');
+                div.dataset.answer = imageName;
+
+                const canvas = document.createElement('canvas');
+                const canvasSize = 200; // Larger canvas for better quality
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(canvasSize / 300, canvasSize / 300); // Scale down to fit in 200x200 while maintaining drawing coordinates
+
+                // Draw solid black shapes
+                const parts = gameDrawings[imageName](ctx);
+                parts.forEach(part => {
+                    ctx.fillStyle = part.color;
+                    ctx.fill(part.path);
+                });
 
                 const label = document.createElement('span');
                 label.classList.add('image-label');
-                label.innerText = imageDetails[key] || '';
+                label.innerText = imageName.toUpperCase();
                 div.prepend(label);
 
-                div.onclick = () => checkAnswer(key, questionData.answer, div);
+                div.appendChild(canvas);
+                div.onclick = () => checkAnswer(imageName, questionData.answer, div);
                 grid.appendChild(div);
             });
 
@@ -405,24 +511,50 @@
                 element.classList.add('correct');
                 showModal("Correct! Great job!", 1000);
                 playSound(800, 0.1);
-
+                
                 document.getElementById('image-grid').style.display = 'none';
                 document.getElementById('coloring-area').style.display = 'flex';
-
-                const svgContainer = document.getElementById('svg-container');
-                const svgClone = element.querySelector('svg').cloneNode(true);
-                svgContainer.innerHTML = '';
-                svgContainer.appendChild(svgClone);
-
-                partsToColor = new Set();
-                partsColored = new Set();
-                svgClone.querySelectorAll('*').forEach(part => {
-                    if (part.tagName !== 'g' && part.id) {
-                        partsToColor.add(part.id);
-                        part.onclick = () => colorSvgPart(part);
-                        part.style.cursor = 'pointer';
-                    }
+                
+                const coloringCanvas = document.getElementById('coloring-canvas');
+                const ctx = coloringCanvas.getContext('2d');
+                ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
+                
+                // Draw the outline of the correct shape
+                currentImageParts = gameDrawings[correct](ctx, 'transparent');
+                currentImageParts.forEach(part => {
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 3;
+                    ctx.stroke(part.path);
                 });
+
+                // Add click listener for coloring
+                coloringCanvas.onclick = (event) => {
+                    const rect = coloringCanvas.getBoundingClientRect();
+                    const x = (event.clientX - rect.left) * (coloringCanvas.width / rect.width);
+                    const y = (event.clientY - rect.top) * (coloringCanvas.height / rect.height);
+
+                    currentImageParts.forEach(part => {
+                        if (ctx.isPointInPath(part.path, x, y) && !partsColored.has(part.name)) {
+                            // Animate fill
+                            const colorSteps = 20;
+                            const colorFill = () => {
+                                ctx.fillStyle = selectedColor;
+                                ctx.fill(part.path);
+                                part.color = selectedColor;
+                            };
+                            colorFill();
+                            partsColored.add(part.name);
+                            playSound(440, 0.05);
+                        }
+                    });
+
+                    if (partsColored.size === currentImageParts.length) {
+                        showModal("All done! Next one!", 1500);
+                        setTimeout(nextQuestion, 1500);
+                    }
+                };
+
+                partsColored = new Set();
             } else {
                 element.classList.add('wrong');
                 showModal("Oops! Try again!", 1000);
@@ -431,25 +563,11 @@
             }
         }
 
-        function colorSvgPart(part) {
-            if (partsColored.has(part.id)) return;
-
-            part.style.setProperty('--fill-color', selectedColor);
-            part.style.animation = 'fillAnimation 0.7s ease-in-out forwards';
-            partsColored.add(part.id);
-            playSound(440, 0.05);
-
-            if (partsColored.size === partsToColor.size) {
-                showModal("All done! Next one!", 1500);
-                setTimeout(nextQuestion, 1500);
-            }
-        }
-
         function nextQuestion() {
             currentQuestionIndex++;
             loadQuestion();
         }
-
+        
         document.querySelectorAll('.color-swatch').forEach(swatch => {
             swatch.onclick = () => {
                 document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
