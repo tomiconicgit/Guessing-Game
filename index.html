@@ -265,7 +265,7 @@
         let selectedColor = '#ff4500';
         let partsColored = new Set();
         let currentImageParts = [];
-        let coloringAnimationId = null; // To store the animation frame ID
+        let coloringAnimationId = null; 
 
         // Helper to convert hex to RGB
         function hexToRgb(hex) {
@@ -280,100 +280,102 @@
             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         }
 
+        // Random color generation
+        function getRandomColor() {
+            const colors = ['#ff4500', '#00ff00', '#1e90ff', '#ffff00', '#9400d3'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
         // Image Data: Drawing functions for each shape
         const gameDrawings = {
             'apple': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#333', '#666', '#999'].slice(0, 3).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#444', '#666', '#888'].slice(0, 3).fill(colors);
                 const parts = [
-                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#333' },
+                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#444' },
                     { name: 'leaf', path: new Path2D(), color: defaultColors[1] || '#666' },
-                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#999' }
+                    { name: 'stem', path: new Path2D(), color: defaultColors[2] || '#888' }
                 ];
-
                 parts[0].path.moveTo(150, 45); parts[0].path.bezierCurveTo(225, 45, 270, 105, 270, 165); parts[0].path.bezierCurveTo(270, 225, 210, 270, 150, 270); parts[0].path.bezierCurveTo(90, 270, 30, 225, 30, 165); parts[0].path.bezierCurveTo(30, 105, 75, 45, 150, 45);
                 parts[1].path.moveTo(165, 45); parts[1].path.bezierCurveTo(180, 30, 210, 30, 225, 45); parts[1].path.bezierCurveTo(210, 60, 180, 60, 165, 45);
                 parts[2].path.moveTo(143, 75); parts[2].path.bezierCurveTo(135, 45, 165, 45, 158, 75);
-
                 return parts;
             },
             'triangle': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.moveTo(150, 30); path.lineTo(270, 270); path.lineTo(30, 270); path.closePath();
-                return [{ name: 'shape', path: path, color: defaultColor || '#333' }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#444' }];
             },
             'circle': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.arc(150, 150, 128, 0, 2 * Math.PI);
-                return [{ name: 'shape', path: path, color: defaultColor || '#333' }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#444' }];
             },
             'square': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.rect(22, 22, 256, 256);
-                return [{ name: 'shape', path: path, color: defaultColor || '#333' }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#444' }];
             },
             'star': (ctx, colors) => {
                 const defaultColor = Array.isArray(colors) ? colors[0] : colors;
                 const path = new Path2D();
                 path.moveTo(150, 30); path.lineTo(180, 110); path.lineTo(260, 110); path.lineTo(200, 160); path.lineTo(220, 240); path.lineTo(150, 200); path.lineTo(80, 240); path.lineTo(100, 160); path.lineTo(40, 110); path.lineTo(120, 110); path.closePath();
-                return [{ name: 'shape', path: path, color: defaultColor || '#333' }];
+                return [{ name: 'shape', path: path, color: defaultColor || '#444' }];
             },
             'house': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#333', '#666', '#999', '#ccc', '#eee', '#bbb'].slice(0, 6).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#444', '#666', '#888', '#aaa', '#bbb'].slice(0, 5).fill(colors);
                 const parts = [
-                    { name: 'roof', path: new Path2D(), color: defaultColors[0] || '#333' },
+                    { name: 'roof', path: new Path2D(), color: defaultColors[0] || '#444' },
                     { name: 'walls', path: new Path2D(), color: defaultColors[1] || '#666' },
-                    { name: 'door', path: new Path2D(), color: defaultColors[2] || '#999' },
-                    { name: 'window1', path: new Path2D(), color: defaultColors[3] || '#ccc' },
-                    { name: 'window2', path: new Path22D(), color: defaultColors[4] || '#eee' },
-                    { name: 'chimney', path: new Path2D(), color: defaultColors[5] || '#bbb' }
+                    { name: 'door', path: new Path2D(), color: defaultColors[2] || '#888' },
+                    { name: 'window1', path: new Path2D(), color: defaultColors[3] || '#aaa' },
+                    { name: 'window2', path: new Path2D(), color: defaultColors[4] || '#bbb' },
                 ];
                 parts[0].path.moveTo(150, 45); parts[0].path.lineTo(30, 135); parts[0].path.lineTo(270, 135); parts[0].path.closePath();
                 parts[1].path.rect(45, 135, 210, 135);
                 parts[2].path.rect(120, 210, 60, 60);
                 parts[3].path.rect(75, 165, 38, 38);
                 parts[4].path.rect(188, 165, 38, 38);
-                parts[5].path.rect(210, 135, 22, 30);
                 return parts;
             },
             'castle': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#333', '#666', '#999', '#ccc', '#eee', '#bbb'].slice(0, 6).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#444', '#666', '#888', '#aaa', '#bbb'].slice(0, 5).fill(colors);
                 const parts = [
-                    { name: 'mainWall', path: new Path2D(), color: defaultColors[0] || '#333' },
+                    { name: 'mainWall', path: new Path2D(), color: defaultColors[0] || '#444' },
                     { name: 'leftTower', path: new Path2D(), color: defaultColors[1] || '#666' },
-                    { name: 'rightTower', path: new Path2D(), color: defaultColors[2] || '#999' },
-                    { name: 'flag', path: new Path2D(), color: defaultColors[3] || '#ccc' },
-                    { name: 'window1', path: new Path2D(), color: defaultColors[4] || '#eee' },
-                    { name: 'window2', path: new Path2D(), color: defaultColors[5] || '#bbb' }
+                    { name: 'rightTower', path: new Path2D(), color: defaultColors[2] || '#888' },
+                    { name: 'flag', path: new Path2D(), color: defaultColors[3] || '#aaa' },
+                    { name: 'door', path: new Path2D(), color: defaultColors[4] || '#bbb' },
                 ];
                 parts[0].path.rect(60, 100, 180, 180);
                 parts[1].path.rect(30, 45, 60, 235);
                 parts[2].path.rect(210, 45, 60, 235);
                 parts[3].path.moveTo(250, 60); parts[3].path.lineTo(265, 45); parts[3].path.lineTo(280, 60); parts[3].path.lineTo(265, 75); parts[3].path.closePath();
-                parts[4].path.rect(80, 140, 25, 25);
-                parts[5].path.rect(195, 140, 25, 25);
+                parts[4].path.rect(130, 200, 40, 80);
                 return parts;
             },
             'car': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#333', '#666', '#999', '#ccc'].slice(0, 4).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#444', '#666', '#888', '#aaa', '#bbb'].slice(0, 5).fill(colors);
                 const parts = [
-                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#333' },
-                    { name: 'roof', path: new Path22D(), color: defaultColors[1] || '#666' },
-                    { name: 'frontWheel', path: new Path2D(), color: defaultColors[2] || '#999' },
-                    { name: 'backWheel', path: new Path2D(), color: defaultColors[3] || '#ccc' }
+                    { name: 'body', path: new Path2D(), color: defaultColors[0] || '#444' },
+                    { name: 'roof', path: new Path2D(), color: defaultColors[1] || '#666' },
+                    { name: 'frontWheel', path: new Path2D(), color: defaultColors[2] || '#888' },
+                    { name: 'backWheel', path: new Path2D(), color: defaultColors[3] || '#aaa' },
+                    { name: 'window', path: new Path2D(), color: defaultColors[4] || '#bbb' },
                 ];
                 parts[0].path.moveTo(30, 180); parts[0].path.lineTo(270, 180); parts[0].path.lineTo(270, 240); parts[0].path.lineTo(30, 240); parts[0].path.closePath();
                 parts[1].path.moveTo(75, 180); parts[1].path.lineTo(135, 120); parts[1].path.lineTo(225, 120); parts[1].path.lineTo(240, 180); parts[1].path.closePath();
                 parts[2].path.arc(90, 240, 30, 0, 2 * Math.PI);
                 parts[3].path.arc(210, 240, 30, 0, 2 * Math.PI);
+                parts[4].path.rect(90, 130, 100, 30);
                 return parts;
             },
             'tree': (ctx, colors) => {
-                const defaultColors = Array.isArray(colors) ? colors : ['#333', '#666'].slice(0, 2).fill(colors);
+                const defaultColors = Array.isArray(colors) ? colors : ['#444', '#666'].slice(0, 2).fill(colors);
                 const parts = [
-                    { name: 'trunk', path: new Path2D(), color: defaultColors[0] || '#333' },
+                    { name: 'trunk', path: new Path2D(), color: defaultColors[0] || '#444' },
                     { name: 'leaves', path: new Path2D(), color: defaultColors[1] || '#666' }
                 ];
                 parts[0].path.rect(125, 180, 50, 90);
@@ -451,21 +453,22 @@
             grid.innerHTML = '';
             
             const shuffledImages = questionData.images.sort(() => Math.random() - 0.5);
-
+            
             shuffledImages.forEach(imageName => {
                 const div = document.createElement('div');
                 div.classList.add('canvas-option');
                 div.dataset.answer = imageName;
 
                 const canvas = document.createElement('canvas');
-                const canvasSize = 200; // Larger canvas for better quality
+                const canvasSize = 200; 
                 canvas.width = canvasSize;
                 canvas.height = canvasSize;
                 const ctx = canvas.getContext('2d');
-                ctx.scale(canvasSize / 300, canvasSize / 300); // Scale down to fit in 200x200 while maintaining drawing coordinates
+                ctx.scale(canvasSize / 300, canvasSize / 300);
 
-                // Draw solid black shapes for the quiz
-                const parts = gameDrawings[imageName](ctx, '#000');
+                // Assign a random color for the quiz image
+                const randomColor = getRandomColor();
+                const parts = gameDrawings[imageName](ctx, randomColor);
                 parts.forEach(part => {
                     ctx.fillStyle = part.color;
                     ctx.fill(part.path);
@@ -473,7 +476,7 @@
 
                 const label = document.createElement('span');
                 label.classList.add('image-label');
-                label.innerText = imageName.toUpperCase();
+                label.innerText = `${randomColorName(randomColor).toUpperCase()} ${imageName.toUpperCase()}`;
                 div.prepend(label);
 
                 div.appendChild(canvas);
@@ -484,6 +487,17 @@
             document.getElementById('image-grid').style.display = 'grid';
             document.getElementById('coloring-area').style.display = 'none';
             isCorrect = false;
+        }
+
+        function randomColorName(hex) {
+            const colorMap = {
+                '#ff4500': 'RED',
+                '#00ff00': 'GREEN',
+                '#1e90ff': 'BLUE',
+                '#ffff00': 'YELLOW',
+                '#9400d3': 'PURPLE'
+            };
+            return colorMap[hex] || 'UNKNOWN';
         }
 
         function checkAnswer(selected, correct, element) {
@@ -502,25 +516,21 @@
                 const ctx = coloringCanvas.getContext('2d');
                 ctx.clearRect(0, 0, coloringCanvas.width, coloringCanvas.height);
 
-                // Initial shades for parts in coloring screen
-                const shades = ['#444', '#666', '#888', '#aaa', '#ccc', '#eee']; // Different shades of grey
-                currentImageParts = gameDrawings[correct](ctx, shades); // Pass shades for initial drawing
+                const shades = ['#444', '#666', '#888', '#aaa', '#bbb']; 
+                currentImageParts = gameDrawings[correct](ctx, shades);
                 
-                // Draw all parts with their initial grey shades
                 currentImageParts.forEach(part => {
                     ctx.fillStyle = part.color;
-                    ctx.strokeStyle = '#333'; // Outline for each part
+                    ctx.strokeStyle = '#333';
                     ctx.lineWidth = 2;
                     ctx.fill(part.path);
                     ctx.stroke(part.path);
                 });
 
-                // Clear any ongoing animation
                 if (coloringAnimationId) {
                     cancelAnimationFrame(coloringAnimationId);
                 }
 
-                // Add click listener for coloring
                 coloringCanvas.onclick = (event) => {
                     const rect = coloringCanvas.getBoundingClientRect();
                     const x = (event.clientX - rect.left) * (coloringCanvas.width / rect.width);
@@ -533,9 +543,6 @@
                             animateColorFill(ctx, part, selectedColor);
                         }
                     });
-
-                    // Check if all parts are colored AFTER animation potentially starts
-                    // This check will be moved to the end of the animation
                 };
 
                 partsColored = new Set();
@@ -547,14 +554,16 @@
             }
         }
 
-        // Animation function for gradual color fill
         function animateColorFill(ctx, part, targetColor) {
             const startColorRgb = hexToRgb(part.color);
             const targetColorRgb = hexToRgb(targetColor);
-            const duration = 500; // milliseconds
+            const duration = 500;
             const startTime = performance.now();
+            let isAnimating = true;
 
             const animate = (currentTime) => {
+                if (!isAnimating) return;
+
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
 
@@ -564,7 +573,6 @@
                 
                 part.color = rgbToHex(r, g, b);
 
-                // Redraw all parts to show animation
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 currentImageParts.forEach(p => {
                     ctx.fillStyle = p.color;
@@ -577,17 +585,15 @@
                 if (progress < 1) {
                     coloringAnimationId = requestAnimationFrame(animate);
                 } else {
-                    // Animation finished
+                    isAnimating = false;
                     if (partsColored.size === currentImageParts.length) {
                         showModal("All done! Next one!", 1500);
                         setTimeout(nextQuestion, 1500);
                     }
                 }
             };
-
             coloringAnimationId = requestAnimationFrame(animate);
         }
-
 
         function nextQuestion() {
             currentQuestionIndex++;
