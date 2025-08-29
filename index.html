@@ -273,7 +273,7 @@
         function loadQuestion() {
             if (availableQuestions.length === 0) {
                 availableQuestions = [...gameData[currentCategory]];
-                alert("You've seen them all! Let's shuffle and play again!");
+                alert("You've seen them all! Let's shuffle and play again.");
             }
 
             const randomIndex = Math.floor(Math.random() * availableQuestions.length);
@@ -417,8 +417,12 @@
 
             moveImageContainer.onclick = (e) => {
                 if (isMoving) {
-                    moveImage.style.left = `${e.offsetX}px`;
-                    moveImage.style.top = `${e.offsetY}px`;
+                    const rect = moveImageContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left - (moveImage.offsetWidth / 2);
+                    const y = e.clientY - rect.top - (moveImage.offsetHeight / 2);
+
+                    moveImage.style.left = `${x}px`;
+                    moveImage.style.top = `${y}px`;
                     moveImage.style.transform = 'none';
                     isMoving = false;
                     document.getElementById('activity-title').innerText = "Awesome! Moving to the next question.";
