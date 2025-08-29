@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Canvas Game</title>
+    <title>Interactive Image Game</title>
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -11,9 +11,9 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            background-color: #121212; /* Dark background */
-            color: #e0e0e0;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            background-color: #f0f2f5; /* Light, clean background */
+            color: #333;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -25,10 +25,10 @@
 
         #game-container {
             width: 100%;
-            max-width: 700px;
-            background-color: #1e1e1e;
-            border-radius: 25px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
             padding: 40px;
             box-sizing: border-box;
             animation: fadeIn 1s ease-out;
@@ -47,103 +47,112 @@
         }
 
         h1 {
-            font-size: 3em;
-            color: #ff6f61; /* Vibrant Orange-Red */
+            font-size: 3.5em;
+            color: #1a73e8; /* Google-style blue */
             margin-bottom: 15px;
+            font-weight: 700;
         }
 
         h2 {
-            font-size: 2.2em;
-            color: #4db6ac; /* Teal */
+            font-size: 2.5em;
+            color: #555;
             margin-top: 0;
+            font-weight: 500;
         }
 
         p {
-            font-size: 1.3em;
-            color: #b0b0b0;
+            font-size: 1.4em;
+            color: #777;
         }
 
         button {
-            background-color: #ff8a65; /* Light Coral */
+            background-color: #1a73e8;
             color: white;
             border: none;
-            padding: 15px 35px;
+            padding: 15px 40px;
             margin: 12px;
-            font-size: 1.3em;
-            border-radius: 12px;
+            font-size: 1.4em;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         button:hover {
-            background-color: #e5735b;
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background-color: #185abc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
 
         #category-buttons button {
-            background-color: #81c784; /* Light Green */
+            background-color: #4285f4;
         }
 
         #category-buttons button:hover {
-            background-color: #66bb6a;
+            background-color: #3b76d9;
         }
 
         #question-text {
-            font-size: 2em;
-            font-weight: bold;
-            color: #ff6f61;
-            margin-bottom: 25px;
+            font-size: 2.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 30px;
             animation: fadeIn 1s ease-in-out;
         }
 
         #image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            margin-top: 25px;
+            gap: 30px;
+            margin-top: 30px;
         }
 
         .image-option {
-            background-color: #2e2e2e;
-            border: 5px solid transparent;
-            border-radius: 20px;
+            background-color: #f8f9fa;
+            border: 4px solid transparent;
+            border-radius: 12px;
             cursor: pointer;
             transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             animation: fadeIn 1s ease-out;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        #loading-message {
+            font-size: 1.5em;
+            color: #888;
+            margin-top: 40px;
         }
 
         .image-option img {
-            width: 150px;
-            height: 150px;
-            border-radius: 10px;
+            width: 180px;
+            height: 180px;
+            border-radius: 8px;
+            object-fit: contain;
         }
 
         .image-option:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .image-option.correct {
-            border-color: #66bb6a;
-            box-shadow: 0 0 20px #66bb6a;
+            border-color: #34a853; /* Google-style green */
+            box-shadow: 0 0 20px #34a853;
             animation: pulse 0.5s ease-in-out 2;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
         }
 
         .image-option.wrong {
-            border-color: #ff6f61;
-            box-shadow: 0 0 20px #ff6f61;
+            border-color: #ea4335; /* Google-style red */
+            box-shadow: 0 0 20px #ea4335;
         }
 
         .modal {
@@ -152,7 +161,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.6);
             display: none;
             justify-content: center;
             align-items: center;
@@ -160,32 +169,32 @@
         }
 
         .modal-content {
-            background-color: #1e1e1e;
+            background-color: #fff;
             padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
 
         .modal-content h3 {
             margin: 0 0 15px;
-            color: #e0e0e0;
-            font-size: 1.5em;
+            color: #333;
+            font-size: 1.6em;
         }
 
         .image-label {
-            font-size: 1.1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #ff6f61;
-            margin-top: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            text-transform: capitalize;
+            color: #333;
+            margin-top: 12px;
         }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="menu" class="page active">
-            <h1>Interactive Game</h1>
+            <h1>🎨 Guess & Color! 🖍️</h1>
             <p>Ready to have some fun?</p>
             <button onclick="startGame()">Start Playing</button>
         </div>
@@ -201,6 +210,7 @@
         <div id="game-page" class="page">
             <h2 id="game-title"></h2>
             <p id="question-text"></p>
+            <div id="loading-message" style="display: none;">Loading images...</div>
             <div id="image-grid"></div>
         </div>
     </div>
@@ -213,13 +223,13 @@
     </div>
 
     <script>
-        // YOUR STABILITY AI API KEY
-        const STABILITY_API_KEY = 'sk-FKaEXInlk4HFj5JFJeciirYT6PaQyUJk4WVHP04POQNvX8uG';
-        const STABILITY_API_URL = "https://api.stability.ai/v2beta/stable-image/generate/sd3";
+        const GOOGLE_API_KEY = 'YOUR_API_KEY';
+        const GOOGLE_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
         
         const pages = document.querySelectorAll('.page');
         const modal = document.getElementById('myModal');
         const modalText = document.getElementById('modal-text');
+        const loadingMessage = document.getElementById('loading-message');
         
         let currentCategory = '';
         let availableQuestions = [];
@@ -227,11 +237,11 @@
         let audioContext = null;
 
         const gamePrompts = {
-            'apple': "A vibrant, digital art apple. Simple, stylized, clean.",
-            'triangle': "A colorful, digital art triangle. Simple, stylized, clean.",
-            'circle': "A vibrant, digital art circle. Simple, stylized, clean.",
-            'square': "A vibrant, digital art square. Simple, stylized, clean.",
-            'star': "A vibrant, digital art star. Simple, stylized, clean.",
+            'apple': "A simple, vibrant, digital art apple. Stylized, clean, high-quality cartoon.",
+            'triangle': "A colorful, digital art triangle. Simple, geometric, high-quality cartoon.",
+            'circle': "A vibrant, digital art circle. Simple, geometric, high-quality cartoon.",
+            'square': "A colorful, digital art square. Simple, geometric, high-quality cartoon.",
+            'star': "A vibrant, digital art star. Simple, stylized, high-quality cartoon.",
             'house': "A cute, cartoon house with bright colors. Simple, stylized, clean.",
             'castle': "A whimsical, cartoon castle. Simple, stylized, clean.",
             'car': "A fun, cartoon car with big wheels. Simple, stylized, clean.",
@@ -277,6 +287,7 @@
         }
         
         let correctImageName = '';
+
         async function loadQuestion() {
             if (availableQuestions.length === 0) {
                 availableQuestions = [...gameData[currentCategory]];
@@ -293,13 +304,16 @@
             const grid = document.getElementById('image-grid');
             grid.innerHTML = '';
             
+            loadingMessage.style.display = 'block';
+
             const shuffledImages = getShuffledImages(correctImageName);
             
             const imagePromises = shuffledImages.map(imageName => fetchImageFromAPI(gamePrompts[imageName]));
 
             try {
-                // Wait for all images to be fetched
                 const imageURLs = await Promise.all(imagePromises);
+
+                loadingMessage.style.display = 'none';
 
                 shuffledImages.forEach((imageName, index) => {
                     const imageUrl = imageURLs[index];
@@ -323,7 +337,8 @@
                 });
             } catch (error) {
                 console.error('Error fetching images:', error);
-                showModal('Could not load images. Please check your API key and try again.');
+                loadingMessage.style.display = 'none';
+                showModal('Could not load images. Please check your API key and network connection.');
             }
         }
 
@@ -359,28 +374,28 @@
         }
 
         async function fetchImageFromAPI(prompt) {
-            const response = await fetch(STABILITY_API_URL, {
+            const response = await fetch(`${GOOGLE_API_URL}?key=${GOOGLE_API_KEY}`, {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "image/jpeg",
-                    "Authorization": `Bearer ${STABILITY_API_KEY}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    prompt: prompt,
-                    output_format: "jpeg",
-                    mode: "text-to-image",
-                    aspect_ratio: "1:1"
+                    contents: [{
+                        parts: [{
+                            text: `Generate a photorealistic, high-quality image of: ${prompt}.`
+                        }]
+                    }]
                 })
             });
 
             if (!response.ok) {
-                const errorBody = await response.json();
-                throw new Error(`API call failed with status ${response.status}: ${JSON.stringify(errorBody)}`);
+                const errorData = await response.json();
+                throw new Error(JSON.stringify(errorData));
             }
 
-            const blob = await response.blob();
-            return URL.createObjectURL(blob);
+            const data = await response.json();
+            const base64Data = data.candidates[0].content.parts[0].text;
+            return `data:image/jpeg;base64,${base64Data}`;
         }
 
         function playSound(frequency, duration, type = 'sine', volume = 0.5) {
