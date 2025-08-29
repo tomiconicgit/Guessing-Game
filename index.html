@@ -46,7 +46,7 @@
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
-            border: 2px solid #ff00ff;
+            border: 2px solid #00ffff; /* Changed from pink */
             transform: translateX(100vw);
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
@@ -61,17 +61,15 @@
 
         h1, h2 {
             font-family: 'Fredoka One', cursive;
-            color: #ff00ff;
+            color: #00ffff; /* Changed from pink */
             animation: glow 1.5s infinite alternate;
         }
 
-        h1 {
-            filter: blur(1px);
-        }
+        /* Removed blur from h1 */
 
         @keyframes glow {
-            from { text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff; }
-            to { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+            from { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; } /* Changed from pink */
+            to { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; } /* Changed from pink */
         }
 
         p {
@@ -81,23 +79,23 @@
 
         button {
             background-color: #4b0082;
-            border: 2px solid #ff00ff;
+            border: 2px solid #00ffff; /* Changed from pink */
             border-radius: 20px;
             padding: 12px 24px;
             margin: 10px;
             font-size: 1.2em;
             cursor: pointer;
-            color: #ff00ff;
+            color: #00ffff; /* Changed from pink */
             font-family: 'Fredoka One', cursive;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: all 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
 
         button:hover {
-            background-color: #ff00ff;
+            background-color: #00ffff; /* Changed from pink */
             color: #4b0082;
             transform: scale(1.1) rotate(-3deg);
-            box-shadow: 0 6px 20px rgba(255,0,255,0.5);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.5); /* Changed from pink */
         }
         
         button:active {
@@ -112,7 +110,7 @@
         
         #score-display, #level-display {
             font-size: 1.4em;
-            color: #00ffff;
+            color: #ff00ff; /* Changed to pink for score to stand out */
             font-weight: 600;
         }
 
@@ -153,8 +151,8 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 5px solid #ff00ff;
-            box-shadow: 0 0 10px #ff00ff;
+            border: 5px solid #00ffff; /* Changed from pink */
+            box-shadow: 0 0 10px #00ffff; /* Changed from pink */
             animation: pulse 1s infinite alternate;
         }
         
@@ -165,12 +163,12 @@
             transform: translate(-50%, -50%);
             font-family: 'Fredoka One', cursive;
             font-size: 2em;
-            color: #00ffff;
+            color: #ff00ff; /* Changed to pink */
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 5px #ff00ff; }
-            100% { box-shadow: 0 0 20px #ff00ff; }
+            0% { box-shadow: 0 0 5px #00ffff; } /* Changed from pink */
+            100% { box-shadow: 0 0 20px #00ffff; } /* Changed from pink */
         }
 
         .thinking-icon {
@@ -178,13 +176,13 @@
             height: 80px;
             margin: 20px auto;
             border-radius: 50%;
-            background-color: #00ffff;
+            background-color: #ff00ff; /* Changed to pink */
             animation: spin-pulse 2s infinite;
         }
 
         @keyframes spin-pulse {
             0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); background-color: #ff00ff; }
+            50% { transform: rotate(180deg) scale(1.1); background-color: #00ffff; } /* Changed to cyan */
             100% { transform: rotate(360deg) scale(1); }
         }
 
@@ -214,7 +212,7 @@
             background: #2c003e;
             padding: 30px;
             border-radius: 20px;
-            border: 2px solid #ff00ff;
+            border: 2px solid #00ffff; /* Changed from pink */
             max-width: 80%;
             transform: scale(0.8);
             transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -466,12 +464,11 @@
                 }
                 updateGuessingInfo();
                 showConfetti();
-                showModal('Yay Ella! Correct!', [{text: 'Awesome!'}]);
+                showModal('Yay Ella! Correct!', [{text: 'Awesome!', callback: nextGuessingQuestion}]);
             } else {
                 playWrong();
-                showModal('Oops! Try again next time!', [{text: 'OK'}]);
+                showModal('Oops! Try again next time!', [{text: 'OK', callback: nextGuessingQuestion}]);
             }
-            document.getElementById('next-guessing-btn').classList.remove('hidden');
             document.getElementById('guessing-options').querySelectorAll('button').forEach(btn => btn.disabled = true);
         }
 
@@ -543,10 +540,13 @@
             const resultDiv = document.getElementById('guess-result');
             resultDiv.innerHTML = `<p>I think you're... <strong>${isLying}</strong>!</p>`;
 
-            showModal('Was I right? (Did I guess correctly?)', [
-                { text: 'Yes!', callback: () => checkLyingAnswer(true) },
-                { text: 'No...', callback: () => checkLyingAnswer(false) }
-            ]);
+            // New logic: Show the guess result first, then ask if it was right
+            setTimeout(() => {
+                showModal('Was I right? (Did I guess correctly?)', [
+                    { text: 'Yes!', callback: () => checkLyingAnswer(true) },
+                    { text: 'No...', callback: () => checkLyingAnswer(false) }
+                ]);
+            }, 500);
         }
         function checkLyingAnswer(wasCorrect) {
             if (wasCorrect) {
